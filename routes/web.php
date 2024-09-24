@@ -41,6 +41,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/patients/{patient}', [\App\Http\Controllers\PatientController::class, 'update'])->name('patients.update');  // Update data pasien
     Route::delete('/patients/{patient}', [\App\Http\Controllers\PatientController::class, 'destroy'])->name('patients.destroy');  // Hapus pasien
 
+    Route::get('/medical-records', [\App\Http\Controllers\MedicalRecordController::class, 'index'])->name('medical-records.index');
+Route::get('/medical-records/{id}', [\App\Http\Controllers\MedicalRecordController::class, 'show'])->name('medical-records.show');
+
 });
 
 require __DIR__ . '/auth.php';
