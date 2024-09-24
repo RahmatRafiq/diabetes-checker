@@ -40,6 +40,12 @@
                     <span class="menu-text">Diagnosa Risiko Diabetes</span>
                 </a>
             </li>
+            <li class="{{ request()->routeIs('patients.index') ? 'active current-page' : '' }}">
+                <a href="{{ route('patients.index') }}">
+                    <i class="bi bi-people"></i> <!-- Ikon sesuai keinginan -->
+                    <span class="menu-text">Manajemen Pasien</span>
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
