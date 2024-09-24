@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MedicalRecord;
 use App\Models\Patient;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Http\Request;
 
 class MedicalRecordController extends Controller
@@ -75,4 +76,18 @@ class MedicalRecordController extends Controller
             'hasil' => $hasil,
         ]);
     }
+    public function exportPDF($id)
+    {
+        // Ambil data rekam medis dan pasien terkait
+        $record = MedicalRecord::with('patient')->findOrFail($id);
+    
+        // Gunakan view yang khusus untuk PDF export dengan inline style
+        $pdf = PDF::loadView('app.medical-record.export', compact('record'))
+                  ->setPaper('a4', 'portrait'); // Atur ukuran dan orientasi kertas
+    
+        // Unduh PDF dengan nama file yang sesuai
+        return $pdf->download('rekam_medis_pasien.pdf');
+    }
+    
+    
 }

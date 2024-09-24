@@ -62,6 +62,7 @@
         </div>
         <div class="card-footer text-end">
             <a href="{{ route('medical-records.index') }}" class="btn btn-secondary">Kembali ke Rekam Medis</a>
+            <a href="{{ route('medical-records.exportPDF', $record->id) }}" class="btn btn-primary">Ekspor PDF</a>
         </div>
     </div>
 </div>

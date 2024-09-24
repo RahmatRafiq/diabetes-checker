@@ -32,17 +32,19 @@ Route::middleware('auth')->group(function () {
     Route::post('/medical-record/store', [\App\Http\Controllers\MedicalRecordController::class, 'store'])->name('medical-record.store');
     Route::get('/medical-record/result/{kategori}/{hasil}', [\App\Http\Controllers\MedicalRecordController::class, 'result'])->name('medical-record.result');
 
-    Route::get('/patients', [\App\Http\Controllers\PatientController::class, 'index'])->name('patients.index');      // Menampilkan daftar pasien
+    Route::get('/patients', [\App\Http\Controllers\PatientController::class, 'index'])->name('patients.index'); // Menampilkan daftar pasien
     Route::post('/patients/json', [\App\Http\Controllers\PatientController::class, 'json'])->name('patients.json');
 
-    Route::get('/patients/create', [\App\Http\Controllers\PatientController::class, 'create'])->name('patients.create');  // Form buat pasien baru
-    Route::post('/patients', [\App\Http\Controllers\PatientController::class, 'store'])->name('patients.store');     // Menyimpan pasien baru
-    Route::get('/patients/{patient}/edit', [\App\Http\Controllers\PatientController::class, 'edit'])->name('patients.edit');  // Form edit pasien
-    Route::put('/patients/{patient}', [\App\Http\Controllers\PatientController::class, 'update'])->name('patients.update');  // Update data pasien
-    Route::delete('/patients/{patient}', [\App\Http\Controllers\PatientController::class, 'destroy'])->name('patients.destroy');  // Hapus pasien
+    Route::get('/patients/create', [\App\Http\Controllers\PatientController::class, 'create'])->name('patients.create'); // Form buat pasien baru
+    Route::post('/patients', [\App\Http\Controllers\PatientController::class, 'store'])->name('patients.store'); // Menyimpan pasien baru
+    Route::get('/patients/{patient}/edit', [\App\Http\Controllers\PatientController::class, 'edit'])->name('patients.edit'); // Form edit pasien
+    Route::put('/patients/{patient}', [\App\Http\Controllers\PatientController::class, 'update'])->name('patients.update'); // Update data pasien
+    Route::delete('/patients/{patient}', [\App\Http\Controllers\PatientController::class, 'destroy'])->name('patients.destroy'); // Hapus pasien
 
     Route::get('/medical-records', [\App\Http\Controllers\MedicalRecordController::class, 'index'])->name('medical-records.index');
-Route::get('/medical-records/{id}', [\App\Http\Controllers\MedicalRecordController::class, 'show'])->name('medical-records.show');
+
+    Route::get('medical-records/{id}/export-pdf', [\App\Http\Controllers\MedicalRecordController::class, 'exportPDF'])->name('medical-records.exportPDF');
+    Route::get('/medical-records/{id}', [\App\Http\Controllers\MedicalRecordController::class, 'show'])->name('medical-records.show');
 
 });
 
