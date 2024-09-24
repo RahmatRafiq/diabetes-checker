@@ -46,6 +46,13 @@
                     <span class="menu-text">Manajemen Pasien</span>
                 </a>
             </li>
+            <li class="{{ request()->routeIs('medical-records.index') ? 'active current-page' : '' }}">
+                <a href="{{ route('medical-records.index') }}">
+                    <i class="bi bi-file-medical"></i>
+                    <span class="menu-text">Rekam Medis</span>
+                </a>
+            </li>
+            
         </ul>
     </div>
 </nav>
