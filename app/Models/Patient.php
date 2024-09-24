@@ -16,6 +16,15 @@ class Patient extends Model
         'gender', 
         'contact', 
         'address',
+        'education_level',
+        'occupation',
+        'weight',
+        'height',
+        'years_with_diabetes',
+        'dm_therapy',
+        'gds',
+        'hba1c',
+        'diet_type'
     ];
 
     public function medicalRecords()
