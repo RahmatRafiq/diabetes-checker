@@ -76,18 +76,52 @@ class MedicalRecordController extends Controller
             'hasil' => $hasil,
         ]);
     }
+    public function uploadFootPhotos(Request $request)
+    {
+        try {
+            $request->validate([
+                'punggung_kaki_kiri' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'telapak_kaki_kiri' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'punggung_kaki_kanan' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'telapak_kaki_kanan' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'patient_id' => 'required|exists:patients,id', // Validasi ID pasien
+            ]);
+
+            // Dapatkan pasien berdasarkan ID
+            $patient = Patient::findOrFail($request->input('patient_id'));
+
+            // Simpan file di folder "kaki-kiri" dan "kaki-kanan"
+            $this->storeFile($patient, $request, 'punggung_kaki_kiri', 'kaki-kiri', 'punggung');
+            $this->storeFile($patient, $request, 'telapak_kaki_kiri', 'kaki-kiri', 'telapak');
+            $this->storeFile($patient, $request, 'punggung_kaki_kanan', 'kaki-kanan', 'punggung');
+            $this->storeFile($patient, $request, 'telapak_kaki_kanan', 'kaki-kanan', 'telapak');
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            \Log::error('Error uploading foot photos: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while uploading foot photos. Please try again later.'], 500);
+        }
+    }
+
+    private function storeFile($patient, $request, $field, $folder, $fileName)
+    {
+        $fileExtension = $request->file($field)->getClientOriginalExtension();
+        $patient->addMediaFromRequest($field)
+            ->usingFileName($fileName . '_' . time() . '.' . $fileExtension)
+            ->toMediaCollection('patients/' . $patient->id . '/' . $folder); // Sesuaikan path penyimpanan berdasarkan patient_id
+    }
+
     public function exportPDF($id)
     {
         // Ambil data rekam medis dan pasien terkait
         $record = MedicalRecord::with('patient')->findOrFail($id);
-    
+
         // Gunakan view yang khusus untuk PDF export dengan inline style
         $pdf = PDF::loadView('app.medical-record.export', compact('record'))
-                  ->setPaper('a4', 'portrait'); // Atur ukuran dan orientasi kertas
-    
+            ->setPaper('a4', 'portrait'); // Atur ukuran dan orientasi kertas
+
         // Unduh PDF dengan nama file yang sesuai
         return $pdf->download('rekam_medis_pasien.pdf');
     }
-    
-    
+
 }
