@@ -34,10 +34,10 @@
                     <span class="menu-text">Manajemen Profil</span>
                 </a>
             </li>
-            <li class="{{ request()->routeIs('medical-record.index') ? 'active current-page' : '' }}">
-                <a href="{{ route('medical-record.index') }}">
-                    <i class="bi bi-heart-pulse"></i> <!-- Ikon sesuai keinginan -->
-                    <span class="menu-text">Diagnosa Risiko Diabetes</span>
+            <li class="{{ request()->routeIs('patients.index') ? 'active current-page' : '' }}">
+                <a href="{{ route('patients.index') }}">
+                    <i class="bi bi-people"></i>
+                    <span class="menu-text">Daftar Pasien</span>
                 </a>
             </li>
             <li class="{{ request()->routeIs('medical-record.create') ? 'active current-page' : '' }}">
@@ -52,7 +52,6 @@
                     <span class="menu-text">Rekam Medis</span>
                 </a>
             </li>
-            
         </ul>
     </div>
 </nav>
