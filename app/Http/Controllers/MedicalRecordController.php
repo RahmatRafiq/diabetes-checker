@@ -9,12 +9,20 @@ use Illuminate\Http\Request;
 class MedicalRecordController extends Controller
 {
     // Menampilkan daftar pasien
+    // Menampilkan daftar rekam medis pasien
     public function index()
     {
-        // Ambil semua data pasien
-        $patients = Patient::all();
+        $medicalRecords = MedicalRecord::with('patient')->get();
 
-        return view('app.medical-record.index', compact('patients'));
+        return view('app.medical-record.index', compact('medicalRecords'));
+    }
+
+    // Menampilkan detail rekam medis
+    public function show($id)
+    {
+        $record = MedicalRecord::with('patient')->findOrFail($id);
+
+        return view('app.medical-record.show', compact('record'));
     }
 
     // Menampilkan form untuk input diagnosa berdasarkan patient_id
