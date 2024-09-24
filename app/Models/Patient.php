@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Patient extends Model
+class Patient extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'user_id',
@@ -26,9 +28,11 @@ class Patient extends Model
         'hba1c',
         'diet_type',
     ];
+
     protected $casts = [
         'dob' => 'date',
     ];
+
     public function medicalRecords()
     {
         return $this->hasMany(MedicalRecord::class);
