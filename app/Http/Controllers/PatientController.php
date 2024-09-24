@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\DataTable;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -14,7 +15,44 @@ class PatientController extends Controller
         $patients = Patient::with('user')->get();
         return view('app.patient.index', compact('patients'));
     }
+    public function json(Request $request)
+    {
+        $search = $request->search['value']; // Nilai pencarian dari DataTables
+        $query = Patient::query();
 
+        // Definisi kolom yang digunakan untuk sorting
+        $columns = [
+            'id',
+            'name',
+            'user.email',
+            'dob',
+            'gender',
+            'contact',
+            'address',
+        ];
+
+        // Relasi dengan 'user' untuk mengambil email
+        $query->with('user');
+
+        // Pencarian berdasarkan nama, email, atau kontak
+        if ($request->filled('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhereHas('user', function ($q) use ($search) {
+                    $q->where('email', 'like', "%{$search}%");
+                })
+                ->orWhere('contact', 'like', "%{$search}%");
+        }
+
+        // Sorting berdasarkan kolom
+        if ($request->filled('order')) {
+            $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
+        }
+
+        // Menggunakan helper DataTable untuk paginasi
+        $data = DataTable::paginate($query, $request);
+
+        return response()->json($data);
+    }
     public function create()
     {
         return view('app.patient.create');
