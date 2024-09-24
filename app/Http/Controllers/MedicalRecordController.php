@@ -8,20 +8,11 @@ use Illuminate\Http\Request;
 
 class MedicalRecordController extends Controller
 {
-    // Menampilkan daftar pasien
-    public function index()
+    // Menampilkan form untuk input diagnosa berdasarkan user yang login
+    public function create()
     {
-        // Ambil semua data pasien
-        $patients = Patient::all();
-
-        return view('app.medical-record.index', compact('patients'));
-    }
-
-    // Menampilkan form untuk input diagnosa berdasarkan patient_id
-    public function create(Request $request)
-    {
-        // Ambil pasien berdasarkan ID yang dikirim dari tombol cek pasien
-        $patient = Patient::findOrFail($request->patient_id);
+        // Ambil pasien berdasarkan user yang login
+        $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
 
         return view('app.medical-record.create', compact('patient'));
     }
@@ -29,6 +20,7 @@ class MedicalRecordController extends Controller
     // Proses input diagnosa dan simpan hasilnya
     public function store(Request $request)
     {
+        // Validasi data form
         $request->validate([
             'jariJari1' => 'required',
             'jariJari3' => 'required',
@@ -39,7 +31,8 @@ class MedicalRecordController extends Controller
             'deformitasKiri' => 'required',
         ]);
 
-        $patient = Patient::findOrFail($request->patient_id);
+        // Ambil data pasien yang login
+        $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
 
         // Menghitung skor angiopati, neuropati, dan deformitas
         $angiopatiScore = ($request->jariJari1 === '-' || $request->jariJari3 === '-' || $request->jariJari5 === '-') ? 1 : 0;
@@ -48,7 +41,7 @@ class MedicalRecordController extends Controller
 
         $totalScore = $angiopatiScore + $neuropatiScore + $deformitasScore;
 
-        // Menentukan kategori risiko
+        // Menentukan kategori risiko berdasarkan total score
         if ($totalScore === 0) {
             $kategori = 0;
             $hasil = "Tidak Berisiko";
@@ -73,13 +66,11 @@ class MedicalRecordController extends Controller
             'hasil' => $hasil,
         ]);
 
-        // Kembali ke halaman hasil diagnosa
-        return redirect()->route('medical-record.result', ['kategori' => $kategori, 'hasil' => $hasil]);
-    }
-
-    // Menampilkan hasil diagnosa
-    public function result($kategori, $hasil)
-    {
-        return view('app.medical-record.result', compact('kategori', 'hasil'));
+        // Kirim nama pasien, kategori, dan hasil melalui session untuk ditampilkan dengan SweetAlert
+        return back()->with([
+            'nama_pasien' => $patient->name,
+            'kategori' => $kategori,
+            'hasil' => $hasil,
+        ]);
     }
 }
