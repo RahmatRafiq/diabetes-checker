@@ -2,13 +2,15 @@
 
 @section('content')
 <div class="container">
-    <form action="{{ route('medical-record.store') }}" method="POST">
+    <!-- Form Diagnosa -->
+    <form id="diagnosa-form" action="{{ route('medical-record.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
+
+        <!-- Bagian Diagnosa Angiopati -->
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
                 <h5 class="card-title">Angiopati</h5>
-                <p class="card-subtitle">Pemeriksaan pembuluh darah perifer untuk mendeteksi adanya gangguan aliran
-                    darah.</p>
+                <p class="card-subtitle">Pemeriksaan pembuluh darah perifer untuk mendeteksi adanya gangguan aliran darah.</p>
             </div>
             <div class="card-body">
                 <div class="mb-3">
@@ -35,11 +37,11 @@
             </div>
         </div>
 
+        <!-- Bagian Neuropati -->
         <div class="card mb-4">
             <div class="card-header bg-success text-white">
                 <h5 class="card-title">Neuropati</h5>
-                <p class="card-subtitle">Pemeriksaan saraf perifer untuk mendeteksi adanya kerusakan pada saraf kaki.
-                </p>
+                <p class="card-subtitle">Pemeriksaan saraf perifer untuk mendeteksi adanya kerusakan pada saraf kaki.</p>
             </div>
             <div class="card-body">
                 <div class="mb-3">
@@ -59,11 +61,11 @@
             </div>
         </div>
 
+        <!-- Bagian Deformitas -->
         <div class="card mb-4">
             <div class="card-header bg-warning text-white">
                 <h5 class="card-title">Deformitas</h5>
-                <p class="card-subtitle">Pemeriksaan deformitas kaki untuk mendeteksi adanya perubahan bentuk yang tidak
-                    normal.</p>
+                <p class="card-subtitle">Pemeriksaan deformitas kaki untuk mendeteksi adanya perubahan bentuk yang tidak normal.</p>
             </div>
             <div class="card-body">
                 <div class="mb-3">
@@ -83,6 +85,35 @@
             </div>
         </div>
 
+        <!-- Bagian Upload Foto Kaki -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title">Upload Foto Kaki (Opsional)</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="punggung_kaki_kiri" class="form-label">Punggung Kaki Kiri: </label>
+                    <input type="file" name="punggung_kaki_kiri" id="punggung_kaki_kiri" class="form-control" accept="image/*">
+                </div>
+                <div class="mb-3">
+                    <label for="telapak_kaki_kiri" class="form-label">Telapak Kaki Kiri: </label>
+                    <input type="file" name="telapak_kaki_kiri" id="telapak_kaki_kiri" class="form-control" accept="image/*">
+                </div>
+                <div class="mb-3">
+                    <label for="punggung_kaki_kanan" class="form-label">Punggung Kaki Kanan: </label>
+                    <input type="file" name="punggung_kaki_kanan" id="punggung_kaki_kanan" class="form-control" accept="image/*">
+                </div>
+                <div class="mb-3">
+                    <label for="telapak_kaki_kanan" class="form-label">Telapak Kaki Kanan: </label>
+                    <input type="file" name="telapak_kaki_kanan" id="telapak_kaki_kanan" class="form-control" accept="image/*">
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden Field untuk Patient ID -->
+        <input type="hidden" name="patient_id" value="{{ $patient->id }}">
+
+        <!-- Tombol Submit -->
         <div class="text-center">
             <button type="submit" class="btn btn-primary">Submit Diagnosa</button>
         </div>
