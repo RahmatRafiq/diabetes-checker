@@ -27,16 +27,19 @@
                         <a href="{{ route('about-app.index') }}">Tentang Aplikasi</a>
                     </li>
                 </ul>
-                <li class="{{ request()->routeIs('profile.edit') ? 'active current-page' : '' }}">
-                    <a href="{{ route('profile.edit') }}">
-                        <i class="bi bi-person"></i>
-                        <span class="menu-text">Manajemen Profil</span>
-                    </a>
-                </li>
             </li>
-
-            {{-- End Admin dashboard --}}
+            <li class="{{ request()->routeIs('profile.edit') ? 'active current-page' : '' }}">
+                <a href="{{ route('profile.edit') }}">
+                    <i class="bi bi-person"></i>
+                    <span class="menu-text">Manajemen Profil</span>
+                </a>
+            </li>
+            <li class="{{ request()->routeIs('medical-record.index') ? 'active current-page' : '' }}">
+                <a href="{{ route('medical-record.index') }}">
+                    <i class="bi bi-heart-pulse"></i> <!-- Ikon sesuai keinginan -->
+                    <span class="menu-text">Diagnosa Risiko Diabetes</span>
+                </a>
+            </li>
         </ul>
     </div>
-    <!-- Sidebar menu ends -->
 </nav>

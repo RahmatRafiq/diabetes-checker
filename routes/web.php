@@ -12,7 +12,7 @@ Route::middleware('auth')->group(function () {
     Route::get('admin/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('admin/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     Route::delete('admin/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('profile/upload',  [\App\Http\Controllers\ProfileController::class, 'upload'])->name('profile.upload');
+    Route::post('profile/upload', [\App\Http\Controllers\ProfileController::class, 'upload'])->name('profile.upload');
     Route::delete('profile/delete-file', [\App\Http\Controllers\ProfileController::class, 'deleteFile'])->name('profile.deleteFile');
     Route::post('/temp/storage', [\App\Http\Controllers\StorageController::class, 'store'])->name('storage.store');
     Route::delete('/temp/storage', [\App\Http\Controllers\StorageController::class, 'destroy'])->name('storage.destroy');
@@ -26,6 +26,12 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('admin/role-permissions/user', \App\Http\Controllers\UserController::class);
     Route::post('admin/role-permissions/user/json', [\App\Http\Controllers\UserController::class, 'json'])->name('user.json');
+
+    Route::get('/medical-record', [\App\Http\Controllers\MedicalRecordController::class, 'index'])->name('medical-record.index');
+    Route::get('/medical-record/create', [\App\Http\Controllers\MedicalRecordController::class, 'create'])->name('medical-record.create');
+    Route::post('/medical-record/store', [\App\Http\Controllers\MedicalRecordController::class, 'store'])->name('medical-record.store');
+    Route::get('/medical-record/result/{kategori}/{hasil}', [\App\Http\Controllers\MedicalRecordController::class, 'result'])->name('medical-record.result');
+
 });
 
 require __DIR__ . '/auth.php';
