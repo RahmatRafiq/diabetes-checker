@@ -10,14 +10,25 @@ class Patient extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 
-        'name', 
-        'dob', 
-        'gender', 
-        'contact', 
+        'user_id',
+        'name',
+        'dob',
+        'gender',
+        'contact',
         'address',
+        'education_level',
+        'occupation',
+        'weight',
+        'height',
+        'years_with_diabetes',
+        'dm_therapy',
+        'gds',
+        'hba1c',
+        'diet_type',
     ];
-
+    protected $casts = [
+        'dob' => 'date',
+    ];
     public function medicalRecords()
     {
         return $this->hasMany(MedicalRecord::class);
