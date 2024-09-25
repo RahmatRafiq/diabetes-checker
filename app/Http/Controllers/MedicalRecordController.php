@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\MediaLibrary;
 use App\Models\MedicalRecord;
 use App\Models\Patient;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Http\Request;
+// Import helper MediaLibrary
 
 class MedicalRecordController extends Controller
 {
@@ -43,20 +45,19 @@ class MedicalRecordController extends Controller
             'punggung_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'telapak_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
+    
         $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
-
+    
         // Logika perhitungan diagnosa
         $angiopatiScore = ($request->jariJari1 === '-' || $request->jariJari3 === '-' || $request->jariJari5 === '-') ? 1 : 0;
         $neuropatiScore = ($request->dorsalPedis === '-' || $request->plantar === '-') ? 1 : 0;
         $deformitasScore = ($request->deformitasKanan === '+' || $request->deformitasKiri === '+') ? 2 : 0;
-
+    
         $totalScore = $angiopatiScore + $neuropatiScore + $deformitasScore;
-
-        if ($totalScore === 0) {
-            $kategori = 0;
-            $hasil = "Tidak Berisiko";
-        } elseif ($totalScore === 1) {
+    
+        $kategori = 0;
+        $hasil = "Tidak Berisiko";
+        if ($totalScore === 1) {
             $kategori = 1;
             $hasil = "Risiko Rendah";
         } elseif ($totalScore <= 3) {
@@ -66,9 +67,9 @@ class MedicalRecordController extends Controller
             $kategori = 3;
             $hasil = "Risiko Tinggi";
         }
-
+    
         // Simpan rekam medis
-        MedicalRecord::create([
+        $medicalRecord = MedicalRecord::create([
             'patient_id' => $patient->id,
             'angiopati' => $request->jariJari1 . ', ' . $request->jariJari3 . ', ' . $request->jariJari5,
             'neuropati' => $request->dorsalPedis . ', ' . $request->plantar,
@@ -76,37 +77,45 @@ class MedicalRecordController extends Controller
             'kategori_risiko' => $kategori,
             'hasil' => $hasil,
         ]);
-
-        // Simpan foto di folder custom
+    
+        // Gunakan helper MediaLibrary untuk menyimpan media ke disk 'patient'
         if ($request->hasFile('punggung_kaki_kiri')) {
-            $this->storeFile($patient, $request->file('punggung_kaki_kiri'), 'kaki-kiri', 'punggung_kaki_kiri');
+            $patient->addMedia($request->file('punggung_kaki_kiri'))
+                ->usingFileName('punggung_kaki_kiri_' . time() . '.' . $request->file('punggung_kaki_kiri')->getClientOriginalExtension())
+                ->toMediaCollection('kaki-kiri', 'patient'); // Specify the 'patient' disk here
         }
         if ($request->hasFile('telapak_kaki_kiri')) {
-            $this->storeFile($patient, $request->file('telapak_kaki_kiri'), 'kaki-kiri', 'telapak_kaki_kiri');
+            $patient->addMedia($request->file('telapak_kaki_kiri'))
+                ->usingFileName('telapak_kaki_kiri_' . time() . '.' . $request->file('telapak_kaki_kiri')->getClientOriginalExtension())
+                ->toMediaCollection('kaki-kiri', 'patient'); // Specify the 'patient' disk here
         }
         if ($request->hasFile('punggung_kaki_kanan')) {
-            $this->storeFile($patient, $request->file('punggung_kaki_kanan'), 'kaki-kanan', 'punggung_kaki_kanan');
+            $patient->addMedia($request->file('punggung_kaki_kanan'))
+                ->usingFileName('punggung_kaki_kanan_' . time() . '.' . $request->file('punggung_kaki_kanan')->getClientOriginalExtension())
+                ->toMediaCollection('kaki-kanan', 'patient'); // Specify the 'patient' disk here
         }
         if ($request->hasFile('telapak_kaki_kanan')) {
-            $this->storeFile($patient, $request->file('telapak_kaki_kanan'), 'kaki-kanan', 'telapak_kaki_kanan');
+            $patient->addMedia($request->file('telapak_kaki_kanan'))
+                ->usingFileName('telapak_kaki_kanan_' . time() . '.' . $request->file('telapak_kaki_kanan')->getClientOriginalExtension())
+                ->toMediaCollection('kaki-kanan', 'patient'); // Specify the 'patient' disk here
         }
-
+    
         return back()->with([
             'nama_pasien' => $patient->name,
             'kategori' => $kategori,
             'hasil' => $hasil,
         ]);
     }
+    
 
     private function storeFile($patient, $file, $folder, $fileName)
     {
-        // Store the file with Spatie's Media Library
+        // Metode ini bisa tetap ada untuk menangani validasi atau tugas tambahan lainnya
         $patient->addMedia($file)
             ->usingFileName($fileName . '_' . time() . '.' . $file->getClientOriginalExtension())
             ->withCustomProperties(['patient_id' => $patient->id])
-            ->toMediaCollection($patient->getCustomMediaPath($folder));
+            ->toMediaCollection($folder);
     }
-    
 
     public function exportPDF($id)
     {
