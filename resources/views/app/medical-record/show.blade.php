@@ -59,7 +59,53 @@
                     <p><strong>Deformitas:</strong> {{ $record->deformitas }}</p>
                 </div>
             </div>
+
+            <!-- Divider -->
+            <hr class="my-4">
+
+            <!-- Section: Foto Kaki Pasien -->
+            <h4 class="mb-3 text-center">Foto Kaki Pasien</h4>
+            <div class="row mb-4">
+                <div class="col-md-6 text-center">
+                    @if($record->patient->getFirstMediaUrl('kaki-kiri'))
+                        <p><strong>Punggung Kaki Kiri:</strong></p>
+                        <img src="{{ $record->patient->getFirstMediaUrl('kaki-kiri') }}" alt="Punggung Kaki Kiri" class="img-fluid mb-3" style="max-height: 200px; max-width: 100%;">
+                    @else
+                        <p>Foto Punggung Kaki Kiri tidak tersedia.</p>
+                    @endif
+                </div>
+                <div class="col-md-6 text-center">
+                    @if($record->patient->getFirstMediaUrl('kaki-kanan'))
+                        <p><strong>Punggung Kaki Kanan:</strong></p>
+                        <img src="{{ $record->patient->getFirstMediaUrl('kaki-kanan') }}" alt="Punggung Kaki Kanan" class="img-fluid mb-3" style="max-height: 200px; max-width: 100%;">
+                    @else
+                        <p>Foto Punggung Kaki Kanan tidak tersedia.</p>
+                    @endif
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 text-center">
+                    @if($record->patient->getFirstMediaUrl('kaki-kiri', 'telapak_kaki_kiri'))
+                        <p><strong>Telapak Kaki Kiri:</strong></p>
+                        <img src="{{ $record->patient->getFirstMediaUrl('kaki-kiri', 'telapak_kaki_kiri') }}" alt="Telapak Kaki Kiri" class="img-fluid mb-3" style="max-height: 200px; max-width: 100%;">
+                    @else
+                        <p>Foto Telapak Kaki Kiri tidak tersedia.</p>
+                    @endif
+                </div>
+                <div class="col-md-6 text-center">
+                    @if($record->patient->getFirstMediaUrl('kaki-kanan', 'telapak_kaki_kanan'))
+                        <p><strong>Telapak Kaki Kanan:</strong></p>
+                        <img src="{{ $record->patient->getFirstMediaUrl('kaki-kanan', 'telapak_kaki_kanan') }}" alt="Telapak Kaki Kanan" class="img-fluid mb-3" style="max-height: 200px; max-width: 100%;">
+                    @else
+                        <p>Foto Telapak Kaki Kanan tidak tersedia.</p>
+                    @endif
+                </div>
+            </div>
         </div>
+
+        <!-- Divider -->
+        <hr class="my-4">
+
         <div class="card-footer text-end">
             <a href="{{ route('medical-records.index') }}" class="btn btn-secondary">Kembali ke Rekam Medis</a>
             <a href="{{ route('medical-records.exportPDF', $record->id) }}" class="btn btn-primary">Ekspor PDF</a>

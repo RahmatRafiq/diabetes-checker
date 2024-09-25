@@ -121,12 +121,40 @@ class MedicalRecordController extends Controller
     {
         // Ambil data rekam medis dan pasien terkait
         $record = MedicalRecord::with('patient')->findOrFail($id);
-
+    
+        // Ambil URL gambar dan konversikan ke base64
+        $punggungKakiKiri = '';
+        $telapakKakiKiri = '';
+        $punggungKakiKanan = '';
+        $telapakKakiKanan = '';
+    
+        if ($record->patient->getFirstMediaUrl('kaki-kiri', 'punggung_kaki_kiri')) {
+            $path = $record->patient->getFirstMediaPath('kaki-kiri', 'punggung_kaki_kiri');
+            $punggungKakiKiri = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
+        }
+    
+        if ($record->patient->getFirstMediaUrl('kaki-kanan', 'punggung_kaki_kanan')) {
+            $path = $record->patient->getFirstMediaPath('kaki-kanan', 'punggung_kaki_kanan');
+            $punggungKakiKanan = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
+        }
+    
+        if ($record->patient->getFirstMediaUrl('kaki-kiri', 'telapak_kaki_kiri')) {
+            $path = $record->patient->getFirstMediaPath('kaki-kiri', 'telapak_kaki_kiri');
+            $telapakKakiKiri = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
+        }
+    
+        if ($record->patient->getFirstMediaUrl('kaki-kanan', 'telapak_kaki_kanan')) {
+            $path = $record->patient->getFirstMediaPath('kaki-kanan', 'telapak_kaki_kanan');
+            $telapakKakiKanan = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
+        }
+    
         // Gunakan view yang khusus untuk PDF export dengan inline style
-        $pdf = PDF::loadView('app.medical-record.export', compact('record'))
-            ->setPaper('a4', 'portrait'); // Atur ukuran dan orientasi kertas
-
+        $pdf = PDF::loadView('app.medical-record.export', compact('record', 'punggungKakiKiri', 'telapakKakiKiri', 'punggungKakiKanan', 'telapakKakiKanan'))
+            ->setPaper('a4', 'portrait');
+    
         // Unduh PDF dengan nama file yang sesuai
         return $pdf->download('rekam_medis_pasien.pdf');
     }
+    
+    
 }
