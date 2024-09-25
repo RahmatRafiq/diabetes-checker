@@ -20,8 +20,15 @@ class MedicalRecordController extends Controller
     public function show($id)
     {
         $record = MedicalRecord::with('patient')->findOrFail($id);
-        return view('app.medical-record.show', compact('record'));
+    
+        // Ambil URL gambar dan konversikan ke base64 (seperti di exportPDF)
+        $punggungKakiKiri = $record->getFirstMediaUrl('punggung-kaki-kiri', 'punggung_kaki_kiri') ?: null;
+        $telapakKakiKiri = $record->getFirstMediaUrl('telapak-kaki-kiri', 'telapak_kaki_kiri') ?: null;
+        $punggungKakiKanan = $record->getFirstMediaUrl('punggung-kaki-kanan', 'punggung_kaki_kanan') ?: null;
+        $telapakKakiKanan = $record->getFirstMediaUrl('telapak-kaki-kanan', 'telapak_kaki_kanan') ?: null;
+        return view('app.medical-record.show', compact('record', 'punggungKakiKiri', 'telapakKakiKiri', 'punggungKakiKanan', 'telapakKakiKanan'));
     }
+    
 
     public function create()
     {
@@ -80,24 +87,16 @@ class MedicalRecordController extends Controller
     
         // Gunakan helper MediaLibrary untuk menyimpan media ke disk 'patient'
         if ($request->hasFile('punggung_kaki_kiri')) {
-            $patient->addMedia($request->file('punggung_kaki_kiri'))
-                ->usingFileName('punggung_kaki_kiri_' . time() . '.' . $request->file('punggung_kaki_kiri')->getClientOriginalExtension())
-                ->toMediaCollection('kaki-kiri', 'patient'); // Specify the 'patient' disk here
+            $this->storeFile($medicalRecord, $request->file('punggung_kaki_kiri'), 'punggung-kaki-kiri', 'punggung_kaki_kiri');
         }
         if ($request->hasFile('telapak_kaki_kiri')) {
-            $patient->addMedia($request->file('telapak_kaki_kiri'))
-                ->usingFileName('telapak_kaki_kiri_' . time() . '.' . $request->file('telapak_kaki_kiri')->getClientOriginalExtension())
-                ->toMediaCollection('kaki-kiri', 'patient'); // Specify the 'patient' disk here
+            $this->storeFile($medicalRecord, $request->file('telapak_kaki_kiri'), 'telapak-kaki-kiri', 'telapak_kaki_kiri');
         }
         if ($request->hasFile('punggung_kaki_kanan')) {
-            $patient->addMedia($request->file('punggung_kaki_kanan'))
-                ->usingFileName('punggung_kaki_kanan_' . time() . '.' . $request->file('punggung_kaki_kanan')->getClientOriginalExtension())
-                ->toMediaCollection('kaki-kanan', 'patient'); // Specify the 'patient' disk here
+            $this->storeFile($medicalRecord, $request->file('punggung_kaki_kanan'), 'punggung-kaki-kanan', 'punggung_kaki_kanan');
         }
         if ($request->hasFile('telapak_kaki_kanan')) {
-            $patient->addMedia($request->file('telapak_kaki_kanan'))
-                ->usingFileName('telapak_kaki_kanan_' . time() . '.' . $request->file('telapak_kaki_kanan')->getClientOriginalExtension())
-                ->toMediaCollection('kaki-kanan', 'patient'); // Specify the 'patient' disk here
+            $this->storeFile($medicalRecord, $request->file('telapak_kaki_kanan'), 'telapak-kaki-kanan', 'telapak_kaki_kanan');
         }
     
         return back()->with([
@@ -108,12 +107,12 @@ class MedicalRecordController extends Controller
     }
     
 
-    private function storeFile($patient, $file, $folder, $fileName)
+    private function storeFile($medical_record, $file, $folder, $fileName)
     {
         // Metode ini bisa tetap ada untuk menangani validasi atau tugas tambahan lainnya
-        $patient->addMedia($file)
+        $medical_record->addMedia($file)
             ->usingFileName($fileName . '_' . time() . '.' . $file->getClientOriginalExtension())
-            ->withCustomProperties(['patient_id' => $patient->id])
+            ->withCustomProperties(['patient_id' => $medical_record->id])
             ->toMediaCollection($folder);
     }
 
@@ -128,23 +127,23 @@ class MedicalRecordController extends Controller
         $punggungKakiKanan = '';
         $telapakKakiKanan = '';
     
-        if ($record->patient->getFirstMediaUrl('kaki-kiri', 'punggung_kaki_kiri')) {
-            $path = $record->patient->getFirstMediaPath('kaki-kiri', 'punggung_kaki_kiri');
+        if ($record->getFirstMediaUrl('punggung-kaki-kiri', 'punggung_kaki_kiri')) {
+            $path = $record->getFirstMediaPath('punggung-kaki-kiri', 'punggung_kaki_kiri');
             $punggungKakiKiri = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
         }
     
-        if ($record->patient->getFirstMediaUrl('kaki-kanan', 'punggung_kaki_kanan')) {
-            $path = $record->patient->getFirstMediaPath('kaki-kanan', 'punggung_kaki_kanan');
+        if ($record->getFirstMediaUrl('punggung-kaki-kanan', 'punggung_kaki_kanan')) {
+            $path = $record->getFirstMediaPath('punggung-kaki-kanan', 'punggung_kaki_kanan');
             $punggungKakiKanan = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
         }
     
-        if ($record->patient->getFirstMediaUrl('kaki-kiri', 'telapak_kaki_kiri')) {
-            $path = $record->patient->getFirstMediaPath('kaki-kiri', 'telapak_kaki_kiri');
+        if ($record->getFirstMediaUrl('telapak-kaki-kiri', 'telapak_kaki_kiri')) {
+            $path = $record->getFirstMediaPath('telapak-kaki-kiri', 'telapak_kaki_kiri');
             $telapakKakiKiri = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
         }
     
-        if ($record->patient->getFirstMediaUrl('kaki-kanan', 'telapak_kaki_kanan')) {
-            $path = $record->patient->getFirstMediaPath('kaki-kanan', 'telapak_kaki_kanan');
+        if ($record->getFirstMediaUrl('telapak-kaki-kanan', 'telapak_kaki_kanan')) {
+            $path = $record->getFirstMediaPath('telapak-kaki-kanan', 'telapak_kaki_kanan');
             $telapakKakiKanan = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
         }
     
