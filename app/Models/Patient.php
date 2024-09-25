@@ -42,4 +42,15 @@ class Patient extends Model implements HasMedia
     {
         return $this->belongsTo(User::class);
     }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('kaki-kiri')->useDisk('public')->singleFile();
+        $this->addMediaCollection('kaki-kanan')->useDisk('public')->singleFile();
+    }
+
+    public function getCustomMediaPath($folder)
+    {
+        return 'patient/' . $this->id . '/' . $folder;
+    }
 }

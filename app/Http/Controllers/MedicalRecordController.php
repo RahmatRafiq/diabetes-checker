@@ -100,9 +100,13 @@ class MedicalRecordController extends Controller
 
     private function storeFile($patient, $file, $folder, $fileName)
     {
-        $filePath = 'patient/' . $patient->id . '/' . $folder;
-        $file->storeAs($filePath, $fileName . '_' . time() . '.' . $file->getClientOriginalExtension(), 'public');
+        // Store the file with Spatie's Media Library
+        $patient->addMedia($file)
+            ->usingFileName($fileName . '_' . time() . '.' . $file->getClientOriginalExtension())
+            ->withCustomProperties(['patient_id' => $patient->id])
+            ->toMediaCollection($patient->getCustomMediaPath($folder));
     }
+    
 
     public function exportPDF($id)
     {
