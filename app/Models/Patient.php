@@ -26,9 +26,11 @@ class Patient extends Model
         'hba1c',
         'diet_type',
     ];
+
     protected $casts = [
         'dob' => 'date',
     ];
+
     public function medicalRecords()
     {
         return $this->hasMany(MedicalRecord::class);

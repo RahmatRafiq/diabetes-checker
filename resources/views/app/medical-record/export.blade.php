@@ -61,6 +61,11 @@
             border-top: 1px solid #ddd;
             margin: 20px 0;
         }
+
+        img {
+            max-height: 150px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 
@@ -119,6 +124,48 @@
                         <p><strong>Angiopati:</strong> {{ $record->angiopati }}</p>
                         <p><strong>Neuropati:</strong> {{ $record->neuropati }}</p>
                         <p><strong>Deformitas:</strong> {{ $record->deformitas }}</p>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Section: Foto Kaki Pasien -->
+                <h4>Foto Kaki Pasien</h4>
+                <div class="row">
+                    <div class="col-md-6 text-center">
+                        @if($punggungKakiKiri)
+                            <p><strong>Punggung Kaki Kiri:</strong></p>
+                            <img src="{{ $punggungKakiKiri }}" alt="Punggung Kaki Kiri">
+                        @else
+                            <p>Foto Punggung Kaki Kiri tidak tersedia.</p>
+                        @endif
+                    </div>
+                    <div class="col-md-6 text-center">
+                        @if($punggungKakiKanan)
+                            <p><strong>Punggung Kaki Kanan:</strong></p>
+                            <img src="{{ $punggungKakiKanan }}" alt="Punggung Kaki Kanan">
+                        @else
+                            <p>Foto Punggung Kaki Kanan tidak tersedia.</p>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 text-center">
+                        @if($telapakKakiKiri)
+                            <p><strong>Telapak Kaki Kiri:</strong></p>
+                            <img src="{{ $telapakKakiKiri }}" alt="Telapak Kaki Kiri">
+                        @else
+                            <p>Foto Telapak Kaki Kiri tidak tersedia.</p>
+                        @endif
+                    </div>
+                    <div class="col-md-6 text-center">
+                        @if($telapakKakiKanan)
+                            <p><strong>Telapak Kaki Kanan:</strong></p>
+                            <img src="{{ $telapakKakiKanan }}" alt="Telapak Kaki Kanan">
+                        @else
+                            <p>Foto Telapak Kaki Kanan tidak tersedia.</p>
+                        @endif
                     </div>
                 </div>
             </div>

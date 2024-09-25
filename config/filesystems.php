@@ -49,6 +49,12 @@ return [
             'url' => env('APP_URL') . '/storage/media',
             'visibility' => 'public',
         ],
+        'patient' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/patient'),
+            'url' => env('APP_URL') . '/storage/patient',
+            'visibility' => 'public',
+        ],
 
         'profile-images' => [
             'driver' => 'local',

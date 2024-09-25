@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/patients/{patient}/edit', [\App\Http\Controllers\PatientController::class, 'edit'])->name('patients.edit'); // Form edit pasien
     Route::put('/patients/{patient}', [\App\Http\Controllers\PatientController::class, 'update'])->name('patients.update'); // Update data pasien
     Route::delete('/patients/{patient}', [\App\Http\Controllers\PatientController::class, 'destroy'])->name('patients.destroy'); // Hapus pasien
+    Route::post('/medical-record/upload-foot-photos', [\App\Http\Controllers\PatientController::class, 'uploadFootPhotos'])->name('medical-record.uploadFootPhotos');
 
     Route::get('/medical-records', [\App\Http\Controllers\MedicalRecordController::class, 'index'])->name('medical-records.index');
 
