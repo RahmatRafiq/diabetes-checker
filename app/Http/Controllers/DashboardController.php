@@ -27,12 +27,22 @@ class DashboardController extends Controller
         $genderDistribution = Dashboard::getGenderDistribution();
         $averageAge = Dashboard::getAverageAge();
         $riskCategoryDistribution = Dashboard::getRiskCategoryDistribution();
+        $riskCategoryByAgeGroup = Dashboard::getRiskCategoryByAgeGroup()
+            ->groupBy('age_group'); // Mengelompokkan hasil berdasarkan kelompok usia
+    
+        $dmTherapyDistribution = Dashboard::getDmTherapyDistribution();
+        $bmiDistribution = Dashboard::getBmiDistribution();
+        $gdsHba1cCorrelation = Dashboard::getGdsHba1cCorrelation();
     
         return view('admin.dashboard', compact(
             'totalPatients', 
             'genderDistribution', 
             'averageAge', 
-            'riskCategoryDistribution'
+            'riskCategoryDistribution',
+            'riskCategoryByAgeGroup',
+            'dmTherapyDistribution',
+            'bmiDistribution',
+            'gdsHba1cCorrelation'
         ));
     }
     
