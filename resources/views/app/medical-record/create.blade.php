@@ -71,15 +71,15 @@
                 <div class="mb-3">
                     <label for="deformitasKanan" class="form-label">Deformitas Kanan: </label>
                     <select name="deformitasKanan" id="deformitasKanan" class="form-control" required>
-                        <option value="-">Tidak Ada (-)</option>
-                        <option value="+">Ada (+)</option>
+                        <option value="-">Tidak Sesuai (-)</option>
+                        <option value="+">Sesuai (+)</option>
                     </select>
                 </div>
                 <div class="mb-3">
                     <label for="deformitasKiri" class="form-label">Deformitas Kiri: </label>
                     <select name="deformitasKiri" id="deformitasKiri" class="form-control" required>
-                        <option value="-">Tidak Ada (-)</option>
-                        <option value="+">Ada (+)</option>
+                        <option value="-">Tidak Sesuai (-)</option>
+                        <option value="+">Sesuai (+)</option>
                     </select>
                 </div>
             </div>

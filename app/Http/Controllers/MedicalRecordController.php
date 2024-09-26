@@ -55,23 +55,28 @@ class MedicalRecordController extends Controller
     
         $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
     
-        // Logika perhitungan diagnosa
+        // Menghitung skor
         $angiopatiScore = ($request->jariJari1 === '-' || $request->jariJari3 === '-' || $request->jariJari5 === '-') ? 1 : 0;
         $neuropatiScore = ($request->dorsalPedis === '-' || $request->plantar === '-') ? 1 : 0;
         $deformitasScore = ($request->deformitasKanan === '+' || $request->deformitasKiri === '+') ? 2 : 0;
     
+        // Menghitung total skor
         $totalScore = $angiopatiScore + $neuropatiScore + $deformitasScore;
     
+        // Kategori risiko
         $kategori = 0;
         $hasil = "Tidak Berisiko";
-        if ($totalScore === 1) {
-            $kategori = 1;
+        if ($totalScore === 0) {
+            $kategori = 0; // Tidak Berisiko
+            $hasil = "Tidak Berisiko";
+        } elseif ($totalScore === 1) {
+            $kategori = 1; // Risiko Rendah
             $hasil = "Risiko Rendah";
-        } elseif ($totalScore <= 3) {
-            $kategori = 2;
+        } elseif ($totalScore === 2) {
+            $kategori = 2; // Risiko Sedang
             $hasil = "Risiko Sedang";
         } else {
-            $kategori = 3;
+            $kategori = 3; // Risiko Tinggi
             $hasil = "Risiko Tinggi";
         }
     
@@ -85,7 +90,7 @@ class MedicalRecordController extends Controller
             'hasil' => $hasil,
         ]);
     
-        // Gunakan helper MediaLibrary untuk menyimpan media ke disk 'patient'
+        // Menyimpan file gambar jika ada
         if ($request->hasFile('punggung_kaki_kiri')) {
             $this->storeFile($medicalRecord, $request->file('punggung_kaki_kiri'), 'punggung-kaki-kiri', 'punggung_kaki_kiri');
         }
@@ -99,12 +104,14 @@ class MedicalRecordController extends Controller
             $this->storeFile($medicalRecord, $request->file('telapak_kaki_kanan'), 'telapak-kaki-kanan', 'telapak_kaki_kanan');
         }
     
+        // Redirect kembali dengan informasi
         return back()->with([
             'nama_pasien' => $patient->name,
             'kategori' => $kategori,
             'hasil' => $hasil,
         ]);
     }
+    
     
 
     private function storeFile($medical_record, $file, $folder, $fileName)
