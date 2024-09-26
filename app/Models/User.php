@@ -55,4 +55,9 @@ class User extends Authenticatable implements HasMedia
             'updated_at' => 'datetime:Y-m-d h:i:s',
         ];
     }
+
+    public function patient()
+    {
+        return $this->hasOne(Patient::class);
+    }
 }

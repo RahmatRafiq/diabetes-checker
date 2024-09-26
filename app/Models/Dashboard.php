@@ -2,11 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\LaporanHarian;
-use App\Models\LaporanMingguan;
-use App\Models\Lowongan;
-use App\Models\MitraProfile;
-use App\Models\Peserta;
+use App\Models\MedicalRecord;
+use App\Models\Patient;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,59 +11,29 @@ class Dashboard extends Model
 {
     use HasFactory;
 
-    public static function getPesertaCount($user)
+    public static function getTotalPatients()
     {
-        return Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->count();
+        return Patient::count();
     }
 
-    public static function getLowonganData($user)
+    public static function getGenderDistribution()
     {
-        return Lowongan::whereHas('mitra', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->withCount('registrations')->get();
+        return Patient::selectRaw('gender, COUNT(*) as count')
+            ->groupBy('gender')
+            ->pluck('count', 'gender');
     }
 
-    public static function getCounts()
+    public static function getAverageAge()
     {
-        return [
-            'peserta' => Peserta::count(),
-            'dosen' => DosenPembimbingLapangan::count(),
-            'mitra' => MitraProfile::count(),
-            'lowongan' => Lowongan::count(),
-            'laporanHarian' => LaporanHarian::count(),
-            'laporanMingguan' => LaporanMingguan::count(),
-            'laporanLengkap' => LaporanLengkap::count(),
-        ];
+        return Patient::selectRaw('AVG(TIMESTAMPDIFF(YEAR, dob, CURDATE())) as average_age')
+            ->first()
+            ->average_age;
     }
 
-    public static function getLaporanHarianStatusCounts()
+    public static function getRiskCategoryDistribution()
     {
-        return LaporanHarian::selectRaw('status, count(*) as count')
-            ->groupBy('status')
-            ->get()
-            ->pluck('count', 'status')
-            ->toArray();
-    }
-
-    public static function getLaporanMingguanStatusCounts()
-    {
-        return LaporanMingguan::selectRaw('status, count(*) as count')
-            ->groupBy('status')
-            ->get()
-            ->pluck('count', 'status')
-            ->toArray();
-    }
-
-    public static function getStaffDashboardData()
-    {
-        // $jumlahPesertaAktif = Peserta::where('status', 'aktif')->count();
-        $laporanHarian = LaporanHarian::count();
-        $laporanMingguan = LaporanMingguan::count();
-        $lowonganTersedia = Lowongan::where('is_open', true)->count();
-        $pesertaTerbaru = Peserta::orderBy('created_at', 'desc')->take(5)->get();
-
-        return compact( 'laporanHarian', 'laporanMingguan', 'lowonganTersedia', 'pesertaTerbaru');
+        return MedicalRecord::selectRaw('kategori_risiko, COUNT(*) as count')
+            ->groupBy('kategori_risiko')
+            ->pluck('count', 'kategori_risiko');
     }
 }
