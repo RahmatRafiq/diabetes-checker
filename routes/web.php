@@ -42,6 +42,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/patients/{patient}', [\App\Http\Controllers\PatientController::class, 'destroy'])->name('patients.destroy'); // Hapus pasien
     Route::post('/medical-record/upload-foot-photos', [\App\Http\Controllers\PatientController::class, 'uploadFootPhotos'])->name('medical-record.uploadFootPhotos');
 
+    Route::get('/patient/profile', [\App\Http\Controllers\PatientController::class, 'editProfile'])->name('patient.profile.edit');
+    Route::post('/patient/profile', [\App\Http\Controllers\PatientController::class, 'updateProfile'])->name('patient.profile.update');
+
     Route::get('/medical-records', [\App\Http\Controllers\MedicalRecordController::class, 'index'])->name('medical-records.index');
 
     Route::get('medical-records/{id}/export-pdf', [\App\Http\Controllers\MedicalRecordController::class, 'exportPDF'])->name('medical-records.exportPDF');
