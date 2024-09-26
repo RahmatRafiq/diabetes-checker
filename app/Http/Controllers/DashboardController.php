@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dashboard;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -22,9 +23,19 @@ class DashboardController extends Controller
 
     public function dashboardAdmin()
     {
-        return view('admin.dashboard', [
-        ]);
+        $totalPatients = Dashboard::getTotalPatients();
+        $genderDistribution = Dashboard::getGenderDistribution();
+        $averageAge = Dashboard::getAverageAge();
+        $riskCategoryDistribution = Dashboard::getRiskCategoryDistribution();
+    
+        return view('admin.dashboard', compact(
+            'totalPatients', 
+            'genderDistribution', 
+            'averageAge', 
+            'riskCategoryDistribution'
+        ));
     }
+    
 
     public function dashboardUser()
     {
