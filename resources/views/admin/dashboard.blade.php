@@ -34,7 +34,7 @@
                 </div>
                 <div class="d-flex align-items-center justify-content-between">
                     <h5 class="m-0 text-white fw-normal">Rata-Rata Usia Pasien</h5>
-                    <h3 class="m-0 text-white">{{ $averageAge }} Tahun</h3>
+                    <h3 class="m-0 text-white">{{ number_format($averageAge, 0) }} Tahun</h3>
                 </div>
             </div>
         </div>
