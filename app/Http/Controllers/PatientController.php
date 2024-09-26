@@ -6,6 +6,7 @@ use App\Helpers\DataTable;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 
 class PatientController extends Controller
@@ -137,4 +138,48 @@ class PatientController extends Controller
         $patient->delete(); // Menghapus data pasien
         return redirect()->route('patients.index')->with('success', 'Pasien dan User berhasil dihapus.');
     }
+
+     // Menampilkan form edit untuk pemilik profil
+     public function editProfile()
+     {
+         $patient = Auth::user()->patient;
+     
+         // Cek apakah objek patient ada
+         if (!$patient) {
+             // Anda bisa mengarahkan ke halaman error atau buat record patient baru jika perlu
+             return redirect()->route('some.route')->withErrors('Profil pasien tidak ditemukan.');
+         }
+     
+         return view('app.patient.additional-patient-information', compact('patient'));
+     }
+     
+ 
+     // Mengupdate profil pasien
+     public function updateProfile(Request $request)
+     {
+         $patient = Auth::user()->patient;
+ 
+         // Validasi input dari form
+         $request->validate([
+             'name' => 'required|string|max:255',
+             'dob' => 'required|date',
+             'gender' => 'required|string|max:10',
+             'contact' => 'required|string|max:15',
+             'address' => 'required|string|max:255',
+             'education_level' => 'nullable|string|max:255',
+             'occupation' => 'nullable|string|max:255',
+             'weight' => 'nullable|numeric',
+             'height' => 'nullable|numeric',
+             'years_with_diabetes' => 'nullable|numeric',
+             'dm_therapy' => 'nullable|string|max:255',
+             'gds' => 'nullable|numeric',
+             'hba1c' => 'nullable|numeric',
+             'diet_type' => 'nullable|string|max:255',
+         ]);
+ 
+         // Update data patient
+         $patient->update($request->all());
+ 
+         return redirect()->back()->with('success', 'Profil berhasil diperbarui');
+     }
 }
