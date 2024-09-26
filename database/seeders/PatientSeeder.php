@@ -4,28 +4,29 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Patient;
-use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PatientSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-        // Membuat 20 data dummy pasien
         for ($i = 1; $i <= 20; $i++) {
-            DB::table('patients')->insert([
-                'user_id' => $i, // Sesuaikan ID user yang ada di tabel users
+            Patient::create([
+                'user_id' => rand(1, 100), // Mengisi user_id dengan nilai acak antara 1-100
                 'name' => 'Patient ' . $i,
-                'dob' => now()->subYears(rand(20, 60))->format('Y-m-d'),
-                'gender' => ['male', 'female'][rand(0, 1)], // Random gender
-                'contact' => '08' . rand(1111111111, 9999999999),
+                'dob' => Carbon::create(rand(1950, 2000), rand(1, 12), rand(1, 28)),
+                'gender' => rand(0, 1) ? 'male' : 'female',
+                'contact' => '08' . rand(1000000000, 9999999999),
                 'address' => 'Address ' . $i,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'education_level' => 'Bachelor',
+                'occupation' => 'Occupation ' . $i,
+                'weight' => rand(50, 100),
+                'height' => rand(150, 190),
+                'years_with_diabetes' => rand(1, 20),
+                'dm_therapy' => rand(0, 1) ? 'Insulin' : 'Obat',
+                'gds' => rand(70, 200),
+                'hba1c' => rand(50, 90) / 10,
+                'diet_type' => rand(0, 1) ? 'Low Carb' : 'High Fiber',
             ]);
         }
     }
