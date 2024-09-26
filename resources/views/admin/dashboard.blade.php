@@ -4,23 +4,26 @@
 <h1 class="h3 mb-3">Ini Halaman Dashboard Untuk Admin</h1>
 
 <div class="row gx-3">
-    <div class="col-xl-3 col-sm-6 col-12">
+    <!-- Total Pasien -->
+    <div class="col-xl-6 col-sm-12 col-12">
         <div class="card mb-3 card-custom background-gradient-1">
             <div class="card-body">
                 <div class="circle-shape shape-1"></div>
                 <div class="circle-shape shape-2"></div>
                 <div class="circle-shape shape-3"></div>
                 <div class="mb-2">
-                    <i class="bi bi-list-check fs-1 text-white lh-1"></i>
+                    <i class="bi bi-person-badge fs-1 text-white lh-1"></i>
                 </div>
                 <div class="d-flex align-items-center justify-content-between">
-                    <h5 class="m-0 text-white fw-normal">Tugas Selesai</h5>
-                    <h3 class="m-0 text-white">100</h3> <!-- Data dummy -->
+                    <h5 class="m-0 text-white fw-normal">Total Pasien</h5>
+                    <h3 class="m-0 text-white">{{ $totalPatients }}</h3>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-sm-6 col-12">
+
+    <!-- Rata-Rata Usia -->
+    <div class="col-xl-6 col-sm-12 col-12">
         <div class="card mb-3 card-custom background-gradient-2">
             <div class="card-body">
                 <div class="circle-shape shape-1"></div>
@@ -30,40 +33,8 @@
                     <i class="bi bi-clock-history fs-1 text-white lh-1"></i>
                 </div>
                 <div class="d-flex align-items-center justify-content-between">
-                    <h5 class="m-0 text-white fw-normal">Tugas Pending</h5>
-                    <h3 class="m-0 text-white">50</h3> <!-- Data dummy -->
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-sm-6 col-12">
-        <div class="card mb-3 card-custom background-gradient-3">
-            <div class="card-body">
-                <div class="circle-shape shape-1"></div>
-                <div class="circle-shape shape-2"></div>
-                <div class="circle-shape shape-3"></div>
-                <div class="mb-2">
-                    <i class="bi bi-file-earmark-bar-graph fs-1 text-white lh-1"></i>
-                </div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <h5 class="m-0 text-white fw-normal">Proyek Selesai</h5>
-                    <h3 class="m-0 text-white">150</h3> <!-- Data dummy -->
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-sm-6 col-12">
-        <div class="card mb-3 card-custom background-gradient-4">
-            <div class="card-body">
-                <div class="circle-shape shape-1"></div>
-                <div class="circle-shape shape-2"></div>
-                <div class="circle-shape shape-3"></div>
-                <div class="mb-2">
-                    <i class="bi bi-file-earmark-play fs-1 text-white lh-1"></i>
-                </div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <h5 class="m-0 text-white fw-normal">Proyek Berjalan</h5>
-                    <h3 class="m-0 text-white">80</h3> <!-- Data dummy -->
+                    <h5 class="m-0 text-white fw-normal">Rata-Rata Usia</h5>
+                    <h3 class="m-0 text-white">{{ $averageAge }} Tahun</h3>
                 </div>
             </div>
         </div>
@@ -71,57 +42,26 @@
 </div>
 
 <div class="row gx-3">
-    <div class="col-xl-6">
+    <!-- Distribusi Jenis Kelamin (Donut Chart) -->
+    <div class="col-xl-6 col-sm-12 col-12">
         <div class="card mb-3">
             <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0">Monitoring Progres Harian</h5>
+                <h5 class="card-title mb-0">Distribusi Jenis Kelamin</h5>
             </div>
             <div class="card-body">
-                <div id="donutChartHarian"></div>
-            </div>
-            <div class="grid text-center">
-                <div class="g-col-4">
-                    <i class="bi bi-check-circle-fill text-success"></i>
-                    <h3 class="m-0 mt-1">80</h3> <!-- Data dummy -->
-                    <p class="text-secondary m-0">Tervalidasi</p>
-                </div>
-                <div class="g-col-4">
-                    <i class="bi bi-clock-fill text-primary"></i>
-                    <h3 class="m-0 mt-1 fw-bolder">20</h3> <!-- Data dummy -->
-                    <p class="text-secondary m-0">Pending</p>
-                </div>
-                <div class="g-col-4">
-                    <i class="bi bi-arrow-repeat text-danger"></i>
-                    <h3 class="m-0 mt-1">10</h3> <!-- Data dummy -->
-                    <p class="text-secondary m-0">Laporan Terevisi</p>
-                </div>
+                <div id="genderChart"></div>
             </div>
         </div>
     </div>
-    <div class="col-xl-6">
+
+    <!-- Distribusi Kategori Risiko (Donut Chart) -->
+    <div class="col-xl-6 col-sm-12 col-12">
         <div class="card mb-3">
             <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0">Monitoring Progres Mingguan</h5>
+                <h5 class="card-title mb-0">Distribusi Kategori Risiko</h5>
             </div>
             <div class="card-body">
-                <div id="donutChartMingguan"></div>
-            </div>
-            <div class="grid text-center">
-                <div class="g-col-4">
-                    <i class="bi bi-check-circle-fill text-success"></i>
-                    <h3 class="m-0 mt-1">70</h3> <!-- Data dummy -->
-                    <p class="text-secondary m-0">Laporan Tervalidasi</p>
-                </div>
-                <div class="g-col-4">
-                    <i class="bi bi-clock-fill text-primary"></i>
-                    <h3 class="m-0 mt-1 fw-bolder">30</h3> <!-- Data dummy -->
-                    <p class="text-secondary m-0">Laporan Pending</p>
-                </div>
-                <div class="g-col-4">
-                    <i class="bi bi-arrow-repeat text-danger"></i>
-                    <h3 class="m-0 mt-1">15</h3> <!-- Data dummy -->
-                    <p class="text-secondary m-0">Laporan Terevisi</p>
-                </div>
+                <div id="riskCategoryChart"></div>
             </div>
         </div>
     </div>
@@ -138,29 +78,20 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Data dummy untuk grafik donat
-        var optionsHarian = {
-            series: [80, 20, 10], // Data dummy
-            labels: ['Validasi', 'Pending', 'Revisi'],
-            colors: ['#96e6a1', '#ffd200', '#FF5E62'],
+        // Donut Chart untuk Distribusi Jenis Kelamin
+        var genderChartOptions = {
+            series: [{{ $genderDistribution->get('male', 0) }}, {{ $genderDistribution->get('female', 0) }}],
             chart: {
                 type: 'donut',
                 height: 350,
             },
+            labels: ['Laki-laki', 'Perempuan'],
+            colors: ['#1E90FF', '#FF69B4'],
             plotOptions: {
                 pie: {
                     donut: {
                         size: '70%'
                     }
-                }
-            },
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shade: 'dark',
-                    type: 'vertical',
-                    gradientToColors: ['#96e6a1', '#ffd200', '#FF5E62'],
-                    stops: [0, 100]
                 }
             },
             responsive: [{
@@ -176,31 +107,23 @@
             }]
         };
 
-        var donutChartHarian = new ApexCharts(document.querySelector("#donutChartHarian"), optionsHarian);
-        donutChartHarian.render();
+        var genderChart = new ApexCharts(document.querySelector("#genderChart"), genderChartOptions);
+        genderChart.render();
 
-        var optionsMingguan = {
-            series: [70, 30, 15], // Data dummy
-            labels: ['Validasi', 'Pending', 'Revisi'],
-            colors: ['#96e6a1', '#ffd200', '#FF5E62'],
+        // Donut Chart untuk Distribusi Kategori Risiko
+        var riskCategoryChartOptions = {
+            series: @json(array_values($riskCategoryDistribution->toArray())),
             chart: {
                 type: 'donut',
                 height: 350,
             },
+            labels: @json(array_keys($riskCategoryDistribution->toArray())),
+            colors: ['#FF5733', '#33FF57', '#3357FF', '#FF33A1'],
             plotOptions: {
                 pie: {
                     donut: {
                         size: '70%'
                     }
-                }
-            },
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shade: 'dark',
-                    type: 'vertical',
-                    gradientToColors: ['#96e6a1', '#ffd200', '#FF5E62'],
-                    stops: [0, 100]
                 }
             },
             responsive: [{
@@ -216,8 +139,8 @@
             }]
         };
 
-        var donutChartMingguan = new ApexCharts(document.querySelector("#donutChartMingguan"), optionsMingguan);
-        donutChartMingguan.render();
+        var riskCategoryChart = new ApexCharts(document.querySelector("#riskCategoryChart"), riskCategoryChartOptions);
+        riskCategoryChart.render();
     });
 </script>
 @endpush

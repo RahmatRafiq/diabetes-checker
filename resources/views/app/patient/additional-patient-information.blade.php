@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h2>Edit Profil Pasien</h2>
+    <h2 class="h3 mb-3">Edit Profil Pasien {{ $patient->user->name }}</h2> 
 
     <!-- Toast Notification -->
     <div class="position-fixed top-0 end-0 p-3" style="z-index: 5">
@@ -35,20 +35,12 @@
             </div>
             <div class="card-body">
                 <div class="row mb-3">
-                    <!-- Nama -->
-                    <div class="col-md-6">
-                        <label for="name" class="form-label">Nama</label>
-                        <input type="text" class="form-control" id="name" name="name"
-                            value="{{ old('name', $patient->name) }}" required>
-                    </div>
                     <!-- Tanggal Lahir -->
                     <div class="col-md-6">
                         <label for="dob" class="form-label">Tanggal Lahir</label>
                         <input type="date" class="form-control" id="dob" name="dob"
                             value="{{ old('dob', $patient->dob->format('Y-m-d')) }}" required>
                     </div>
-                </div>
-                <div class="row mb-3">
                     <!-- Jenis Kelamin -->
                     <div class="col-md-6">
                         <label for="gender" class="form-label">Jenis Kelamin</label>
@@ -59,18 +51,20 @@
                                 }}>Perempuan</option>
                         </select>
                     </div>
+                </div>
+                <div class="row mb-3">
                     <!-- Kontak -->
                     <div class="col-md-6">
                         <label for="contact" class="form-label">Kontak</label>
                         <input type="text" class="form-control" id="contact" name="contact"
                             value="{{ old('contact', $patient->contact) }}" required>
                     </div>
-                </div>
-                <div class="mb-3">
                     <!-- Alamat -->
-                    <label for="address" class="form-label">Alamat</label>
-                    <input type="text" class="form-control" id="address" name="address"
-                        value="{{ old('address', $patient->address) }}" required>
+                    <div class="col-md-6">
+                        <label for="address" class="form-label">Alamat</label>
+                        <input type="text" class="form-control" id="address" name="address"
+                            value="{{ old('address', $patient->address) }}" required>
+                    </div>
                 </div>
             </div>
         </div>
