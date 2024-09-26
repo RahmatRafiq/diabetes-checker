@@ -52,6 +52,12 @@
                     <span class="menu-text">Rekam Medis</span>
                 </a>
             </li>
+            <li class="{{ request()->routeIs('patient.profile.edit') ? 'active current-page' : '' }}">
+                <a href="{{ route('patient.profile.edit') }}">
+                    <i class="bi bi-person-badge"></i> <!-- Ganti dengan ikon yang sesuai -->
+                    <span class="menu-text">Edit Profil Pasien</span>
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
