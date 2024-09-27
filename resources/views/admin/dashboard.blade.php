@@ -4,7 +4,6 @@
 <h1 class="h3 mb-3">Ini Halaman Dashboard Untuk Admin</h1>
 
 <div class="row gx-3">
-    <!-- Total Pasien -->
     <div class="col-xl-6 col-sm-12 col-12">
         <div class="card mb-3 card-custom background-gradient-1">
             <div class="card-body">
@@ -22,7 +21,6 @@
         </div>
     </div>
 
-    <!-- Rata-Rata Usia -->
     <div class="col-xl-6 col-sm-12 col-12">
         <div class="card mb-3 card-custom background-gradient-2">
             <div class="card-body">
@@ -42,7 +40,6 @@
 </div>
 
 <div class="row gx-3">
-    <!-- Distribusi Jenis Kelamin (Donut Chart) -->
     <div class="col-xl-6 col-sm-12 col-12">
         <div class="card mb-3">
             <div class="card-header bg-primary text-white">
@@ -54,7 +51,6 @@
         </div>
     </div>
 
-    <!-- Distribusi Kategori Risiko (Donut Chart) -->
     <div class="col-xl-6 col-sm-12 col-12">
         <div class="card mb-3">
             <div class="card-header bg-primary text-white">
@@ -68,19 +64,35 @@
 </div>
 
 <div class="row gx-3">
-    <!-- Distribusi Kategori Risiko Berdasarkan Usia -->
-    <div class="col-xl-6 col-sm-12 col-12">
+    <div class="col-12">
         <div class="card mb-3">
             <div class="card-header bg-success text-white">
                 <h5 class="card-title mb-0">Distribusi Risiko Berdasarkan Usia</h5>
             </div>
             <div class="card-body">
-                <div id="riskByAgeChart"></div>
+                <div class="row">
+                    <div class="col-md-4 col-12 mb-3 text-center">
+                        <div id="riskUnder30Chart"></div>
+                        <p><strong>Usia &lt;30 tahun</strong></p>
+                    </div>
+                    <div class="col-md-4 col-12 mb-3 text-center">
+                        <div id="riskBetween30and50Chart"></div>
+                        <p><strong>Usia 30-50 tahun</strong></p>
+                    </div>
+                    <div class="col-md-4 col-12 mb-3 text-center">
+                        <div id="riskOver50Chart"></div>
+                        <p><strong>Usia &gt;50 tahun</strong></p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Distribusi BMI (Donut Chart) -->
+<div class="row gx-3">
+</div>
+
+<div class="row gx-3">
     <div class="col-xl-6 col-sm-12 col-12">
         <div class="card mb-3">
             <div class="card-header bg-warning text-white">
@@ -88,20 +100,9 @@
             </div>
             <div class="card-body">
                 <div id="bmiChart"></div>
-                <p><strong>Kategori BMI:</strong></p>
-                <ul>
-                    <li><strong>Underweight:</strong> BMI < 18.5</li>
-                    <li><strong>Normal:</strong> BMI 18.5 - 24.9</li>
-                    <li><strong>Overweight:</strong> BMI 25 - 29.9</li>
-                    <li><strong>Obese:</strong> BMI >= 30</li>
-                </ul>
             </div>
         </div>
     </div>
-</div>
-
-<div class="row gx-3">
-    <!-- Distribusi Terapi DM -->
     <div class="col-xl-6 col-sm-12 col-12">
         <div class="card mb-3">
             <div class="card-header bg-info text-white">
@@ -113,8 +114,9 @@
         </div>
     </div>
 
-    <!-- Korelasi GDS dan HbA1c (Scatter Plot) -->
-    <div class="col-xl-6 col-sm-12 col-12">
+</div>
+<div class="row gx-3">
+    <div class="col-12">
         <div class="card mb-3">
             <div class="card-header bg-danger text-white">
                 <h5 class="card-title mb-0">Korelasi GDS dan HbA1c pada Pasien</h5>
@@ -137,7 +139,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Helper function to render Donut Chart
         function renderDonutChart(element, series, labels, colors) {
             var options = {
                 series: series,
@@ -171,7 +172,41 @@
             chart.render();
         }
 
-        // Donut Chart untuk Distribusi Jenis Kelamin
+        function renderFullWidthDonutChart(element, series, labels, colors) {
+            var options = {
+                series: series,
+                chart: {
+                    type: 'donut',
+                    height: 400,
+                    width: '100%',
+                },
+                labels: labels,
+                colors: colors,
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '80%'
+                        }
+                    }
+                },
+                responsive: [{
+                    breakpoint: 768,
+                    options: {
+                        chart: {
+                            height: 350,
+                            width: '100%',
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }]
+            };
+
+            var chart = new ApexCharts(document.querySelector(element), options);
+            chart.render();
+        }
+
         renderDonutChart(
             "#genderChart",
             [{{ $genderDistribution->get('male', 0) }}, {{ $genderDistribution->get('female', 0) }}],
@@ -179,75 +214,65 @@
             ['#1E90FF', '#FF69B4']
         );
 
-        // Donut Chart untuk Distribusi Kategori Risiko
-       // Donut Chart untuk Distribusi Kategori Risiko
-renderDonutChart(
-    "#riskCategoryChart",
-    [
-        {{ $riskCategoryDistribution->get(0, 0) }}, // Tidak Berisiko
-        {{ $riskCategoryDistribution->get(1, 0) }}, // Risiko Rendah
-        {{ $riskCategoryDistribution->get(2, 0) }}, // Risiko Sedang
-        {{ $riskCategoryDistribution->get(3, 0) }}  // Risiko Tinggi
-    ],
-    ['Tidak Berisiko', 'Risiko Rendah', 'Risiko Sedang', 'Risiko Tinggi'], // Labels
-    ['#28a745', '#FFC107', '#FD7E14', '#DC3545'] // Warna untuk tiap kategori
-);
-
-
-        // Donut Chart untuk Distribusi Kategori Risiko Berdasarkan Usia
-        function prepareRiskByAgeData(data) {
-            var result = {
-                '<30': [0, 0, 0],
-                '30-50': [0, 0, 0],
-                '>50': [0, 0, 0]
-            };
-
-            data.forEach(function(item) {
-                var ageGroup = item.age_group;
-                var riskCategory = item.kategori_risiko;
-
-                if (riskCategory === 1) {
-                    result[ageGroup][0]++;
-                } else if (riskCategory === 2) {
-                    result[ageGroup][1]++;
-                } else if (riskCategory === 3) {
-                    result[ageGroup][2]++;
-                }
-            });
-
-            return result;
-        }
-
-        var riskByAgeData = prepareRiskByAgeData(@json($riskCategoryByAgeGroup->flatten()));
-
         renderDonutChart(
-            "#riskByAgeChart",
+            "#riskCategoryChart",
             [
-                riskByAgeData['<30'][0] + riskByAgeData['30-50'][0] + riskByAgeData['>50'][0], 
-                riskByAgeData['<30'][1] + riskByAgeData['30-50'][1] + riskByAgeData['>50'][1], 
-                riskByAgeData['<30'][2] + riskByAgeData['30-50'][2] + riskByAgeData['>50'][2],
+                {{ $riskCategoryDistribution->get(0, 0) }},
+                {{ $riskCategoryDistribution->get(1, 0) }},
+                {{ $riskCategoryDistribution->get(2, 0) }},
+                {{ $riskCategoryDistribution->get(3, 0) }}
+            ],
+            ['Tidak Berisiko', 'Risiko Rendah', 'Risiko Sedang', 'Risiko Tinggi'],
+            ['#28a745', '#FFC107', '#FD7E14', '#DC3545']
+        );
+
+        renderFullWidthDonutChart(
+            "#riskUnder30Chart",
+            [
+                {{ $under30->where('kategori_risiko', 1)->sum('count') }},
+                {{ $under30->where('kategori_risiko', 2)->sum('count') }},
+                {{ $under30->where('kategori_risiko', 3)->sum('count') }}
             ],
             ['Risiko Rendah', 'Risiko Sedang', 'Risiko Tinggi'],
             ['#FF5733', '#33FF57', '#3357FF']
         );
 
-        // Donut Chart untuk Distribusi BMI
+        renderFullWidthDonutChart(
+            "#riskBetween30and50Chart",
+            [
+                {{ $between30and50->where('kategori_risiko', 1)->sum('count') }},
+                {{ $between30and50->where('kategori_risiko', 2)->sum('count') }},
+                {{ $between30and50->where('kategori_risiko', 3)->sum('count') }}
+            ],
+            ['Risiko Rendah', 'Risiko Sedang', 'Risiko Tinggi'],
+            ['#FF5733', '#33FF57', '#3357FF']
+        );
+
+        renderFullWidthDonutChart(
+            "#riskOver50Chart",
+            [
+                {{ $over50->where('kategori_risiko', 1)->sum('count') }},
+                {{ $over50->where('kategori_risiko', 2)->sum('count') }},
+                {{ $over50->where('kategori_risiko', 3)->sum('count') }}
+            ],
+            ['Risiko Rendah', 'Risiko Sedang', 'Risiko Tinggi'],
+            ['#FF5733', '#33FF57', '#3357FF']
+        );
+
         renderDonutChart(
             "#bmiChart",
             @json(array_values($bmiDistribution->toArray())),
-            ['Underweight', 'Normal', 'Overweight', 'Obese'],
+            ['Underweight < 18.5', 'Normal 18.5 - 24.9', 'Overweight 25 - 29.9', 'Obese >= 30'],
             ['#FF5733', '#33FF57', '#3357FF', '#FF33A1']
         );
 
-        // Donut Chart untuk Distribusi Terapi DM
         renderDonutChart(
             "#dmTherapyChart",
             @json(array_values($dmTherapyDistribution->toArray())),
-            ['Obat', 'Insulin'],
+            ['Insulin','Obat'],
             ['#FF5733', '#33FF57']
         );
 
-        // Scatter Plot untuk Korelasi GDS dan HbA1c
         var gdsHba1cChartOptions = {
             series: [{
                 name: 'Korelasi GDS dan HbA1c',
@@ -262,24 +287,20 @@ renderDonutChart(
             xaxis: {
                 title: {
                     text: 'GDS'
-                }
+                },
+                tickAmount: 10,
+                min: 0,
+                max: 200,
             },
             yaxis: {
                 title: {
                     text: 'HbA1c'
                 }
             },
-            responsive: [{
-                breakpoint: 480,
-                options: {
-                    chart: {
-                        width: 200
-                    },
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }]
+            markers: {
+                size: 5,
+                colors: ['#FF0000']
+            }
         };
 
         var gdsHba1cChart = new ApexCharts(document.querySelector("#gdsHba1cChart"), gdsHba1cChartOptions);

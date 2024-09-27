@@ -36,7 +36,6 @@ class Dashboard extends Model
             ->groupBy('kategori_risiko')
             ->pluck('count', 'kategori_risiko');
     }
-    
 
     // Kategori Risiko Berdasarkan Usia
     public static function getRiskCategoryByAgeGroup()
@@ -54,6 +53,7 @@ class Dashboard extends Model
         ->get();
     }
     
+    
 
     // Presentase Pasien Berdasarkan Terapi DM
     public static function getDmTherapyDistribution()
@@ -67,15 +67,18 @@ class Dashboard extends Model
     public static function getBmiDistribution()
     {
         return Patient::selectRaw("
-            CASE 
+            CASE
                 WHEN (weight / (height / 100 * height / 100)) < 18.5 THEN 'Underweight'
                 WHEN (weight / (height / 100 * height / 100)) BETWEEN 18.5 AND 24.9 THEN 'Normal'
                 WHEN (weight / (height / 100 * height / 100)) BETWEEN 25 AND 29.9 THEN 'Overweight'
                 ELSE 'Obese'
             END as bmi_category, COUNT(*) as count")
+            ->whereNotNull('weight')
+            ->whereNotNull('height')
             ->groupBy('bmi_category')
             ->pluck('count', 'bmi_category');
     }
+    
 
     // Korelasi GDS dan HbA1c
     public static function getGdsHba1cCorrelation()
@@ -85,4 +88,5 @@ class Dashboard extends Model
             ->whereNotNull('hba1c')
             ->get();
     }
+
 }
