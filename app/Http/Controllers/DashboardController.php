@@ -27,15 +27,36 @@ class DashboardController extends Controller
         $genderDistribution = Dashboard::getGenderDistribution();
         $averageAge = Dashboard::getAverageAge();
         $riskCategoryDistribution = Dashboard::getRiskCategoryDistribution();
-    
+        $riskCategoryByAgeGroup = Dashboard::getRiskCategoryByAgeGroup();
+        $under30 = $riskCategoryByAgeGroup->filter(function ($item) {
+            return $item->age_group == '<30';
+        });
+
+        $between30and50 = $riskCategoryByAgeGroup->filter(function ($item) {
+            return $item->age_group == '30-50';
+        });
+
+        $over50 = $riskCategoryByAgeGroup->filter(function ($item) {
+            return $item->age_group == '>50';
+        });
+        $dmTherapyDistribution = Dashboard::getDmTherapyDistribution();
+        $bmiDistribution = Dashboard::getBmiDistribution();
+        $gdsHba1cCorrelation = Dashboard::getGdsHba1cCorrelation();
+
         return view('admin.dashboard', compact(
-            'totalPatients', 
-            'genderDistribution', 
-            'averageAge', 
-            'riskCategoryDistribution'
+            'totalPatients',
+            'genderDistribution',
+            'averageAge',
+            'riskCategoryDistribution',
+            'riskCategoryByAgeGroup',
+            'under30',  // Data usia <30
+            'between30and50',  // Data usia 30-50
+            'over50',  // Data usia >50
+            'dmTherapyDistribution',
+            'bmiDistribution',
+            'gdsHba1cCorrelation'
         ));
     }
-    
 
     public function dashboardUser()
     {
