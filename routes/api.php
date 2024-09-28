@@ -15,3 +15,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/medical-records', [MedicalRecordController::class, 'store'])->name('medical-records.store');
     Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])->name('medical-records.show');
 });
+
+Route::get('/medical-records-test', [MedicalRecordController::class, 'apiTest'])->name('medical-records.apiTest');
+Route::get('/patients-test', [PatientController::class, 'apiTest'])->name('patients.apiTest');
