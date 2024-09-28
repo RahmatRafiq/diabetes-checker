@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class MedicalRecordController extends Controller
 {
+    public function apiTest()
+    {
+        $medicalRecords = MedicalRecord::all();
+        return response()->json($medicalRecords);
+    }
     public function index()
     {
         $patient = auth()->user()->patient;
