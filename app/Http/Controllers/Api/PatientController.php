@@ -45,16 +45,24 @@ class PatientController extends Controller
 
     public function show()
     {
-        // Ambil pasien dari pengguna yang sedang login
-        $patient = Auth::user()->patient;
-
+        // Ambil user yang sedang login
+        $user = Auth::user();
+        
+        // Ambil profil pasien terkait
+        $patient = $user->patient;
+    
         // Periksa apakah profil pasien ada
         if (!$patient) {
             return response()->json(['message' => 'Patient profile not found'], 404);
         }
-
-        return response()->json($patient);
+    
+        // Sertakan data pengguna (nama) dalam respons
+        return response()->json([
+            'name' => $user->name,  // Ambil nama pengguna dari model User
+            'patient' => $patient   // Sertakan juga data pasien
+        ]);
     }
+    
 
     public function update(Request $request)
     {
