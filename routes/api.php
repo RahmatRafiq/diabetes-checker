@@ -9,7 +9,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
-    Route::get('/patient/profile', [PatientController::class, 'showProfile'])->name('patient.profile.show');
+    Route::get('/patient/profile', [PatientController::class, 'show'])->name('patient.profile.show');
     Route::put('/patient/profile', [PatientController::class, 'updateProfile'])->name('patient.profile.update');
     Route::get('/medical-records', [MedicalRecordController::class, 'index'])->name('medical-records.index');
     Route::post('/medical-records', [MedicalRecordController::class, 'store'])->name('medical-records.store');
