@@ -47,16 +47,16 @@ class PatientController extends Controller
     {
         // Ambil pasien dari pengguna yang sedang login
         $patient = Auth::user()->patient;
-    
+
         // Periksa apakah profil pasien ada
         if (!$patient) {
             return response()->json(['message' => 'Patient profile not found'], 404);
         }
-    
+
         return response()->json($patient);
     }
-    
-    public function update(Request $request, $id)
+
+    public function update(Request $request)
     {
         $data = $request->validate([
             'dob' => 'required|date',
@@ -74,7 +74,15 @@ class PatientController extends Controller
             'diet_type' => 'nullable|string|max:255',
         ]);
 
-        $patient = Patient::findOrFail($id);
+        // Ambil pasien dari pengguna yang sedang login
+        $patient = Auth::user()->patient;
+
+        // Periksa apakah profil pasien ada
+        if (!$patient) {
+            return response()->json(['message' => 'Patient profile not found'], 404);
+        }
+
+        // Update data pasien
         $patient->update($data);
 
         return response()->json($patient);
