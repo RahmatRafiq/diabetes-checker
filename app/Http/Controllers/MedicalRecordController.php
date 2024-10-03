@@ -7,7 +7,6 @@ use App\Models\MedicalRecord;
 use App\Models\Patient;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Http\Request;
-// Import helper MediaLibrary
 
 class MedicalRecordController extends Controller
 {
@@ -21,14 +20,12 @@ class MedicalRecordController extends Controller
     {
         $record = MedicalRecord::with('patient')->findOrFail($id);
     
-        // Ambil URL gambar dan konversikan ke base64 (seperti di exportPDF)
         $punggungKakiKiri = $record->getFirstMediaUrl('punggung-kaki-kiri', 'punggung_kaki_kiri') ?: null;
         $telapakKakiKiri = $record->getFirstMediaUrl('telapak-kaki-kiri', 'telapak_kaki_kiri') ?: null;
         $punggungKakiKanan = $record->getFirstMediaUrl('punggung-kaki-kanan', 'punggung_kaki_kanan') ?: null;
         $telapakKakiKanan = $record->getFirstMediaUrl('telapak-kaki-kanan', 'telapak_kaki_kanan') ?: null;
         return view('app.medical-record.show', compact('record', 'punggungKakiKiri', 'telapakKakiKiri', 'punggungKakiKanan', 'telapakKakiKanan'));
     }
-    
 
     public function create()
     {
@@ -38,7 +35,6 @@ class MedicalRecordController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi data form dan file
         $request->validate([
             'jariJari1' => 'required',
             'jariJari3' => 'required',
@@ -55,32 +51,28 @@ class MedicalRecordController extends Controller
     
         $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
     
-        // Menghitung skor
         $angiopatiScore = ($request->jariJari1 === '-' || $request->jariJari3 === '-' || $request->jariJari5 === '-') ? 1 : 0;
         $neuropatiScore = ($request->dorsalPedis === '-' || $request->plantar === '-') ? 1 : 0;
         $deformitasScore = ($request->deformitasKanan === '+' || $request->deformitasKiri === '+') ? 2 : 0;
     
-        // Menghitung total skor
         $totalScore = $angiopatiScore + $neuropatiScore + $deformitasScore;
     
-        // Kategori risiko
         $kategori = 0;
         $hasil = "Tidak Berisiko";
         if ($totalScore === 0) {
-            $kategori = 0; // Tidak Berisiko
+            $kategori = 0;
             $hasil = "Tidak Berisiko";
         } elseif ($totalScore === 1) {
-            $kategori = 1; // Risiko Rendah
+            $kategori = 1;
             $hasil = "Risiko Rendah";
         } elseif ($totalScore === 2) {
-            $kategori = 2; // Risiko Sedang
+            $kategori = 2;
             $hasil = "Risiko Sedang";
         } else {
-            $kategori = 3; // Risiko Tinggi
+            $kategori = 3;
             $hasil = "Risiko Tinggi";
         }
     
-        // Simpan rekam medis
         $medicalRecord = MedicalRecord::create([
             'patient_id' => $patient->id,
             'angiopati' => $request->jariJari1 . ', ' . $request->jariJari3 . ', ' . $request->jariJari5,
@@ -90,7 +82,6 @@ class MedicalRecordController extends Controller
             'hasil' => $hasil,
         ]);
     
-        // Menyimpan file gambar jika ada
         if ($request->hasFile('punggung_kaki_kiri')) {
             $this->storeFile($medicalRecord, $request->file('punggung_kaki_kiri'), 'punggung-kaki-kiri', 'punggung_kaki_kiri');
         }
@@ -104,19 +95,15 @@ class MedicalRecordController extends Controller
             $this->storeFile($medicalRecord, $request->file('telapak_kaki_kanan'), 'telapak-kaki-kanan', 'telapak_kaki_kanan');
         }
     
-        // Redirect kembali dengan informasi
         return back()->with([
             'nama_pasien' => $patient->name,
             'kategori' => $kategori,
             'hasil' => $hasil,
         ]);
     }
-    
-    
 
     private function storeFile($medical_record, $file, $folder, $fileName)
     {
-        // Metode ini bisa tetap ada untuk menangani validasi atau tugas tambahan lainnya
         $medical_record->addMedia($file)
             ->usingFileName($fileName . '_' . time() . '.' . $file->getClientOriginalExtension())
             ->withCustomProperties(['patient_id' => $medical_record->id])
@@ -125,10 +112,8 @@ class MedicalRecordController extends Controller
 
     public function exportPDF($id)
     {
-        // Ambil data rekam medis dan pasien terkait
         $record = MedicalRecord::with('patient')->findOrFail($id);
     
-        // Ambil URL gambar dan konversikan ke base64
         $punggungKakiKiri = '';
         $telapakKakiKiri = '';
         $punggungKakiKanan = '';
@@ -154,13 +139,9 @@ class MedicalRecordController extends Controller
             $telapakKakiKanan = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
         }
     
-        // Gunakan view yang khusus untuk PDF export dengan inline style
         $pdf = PDF::loadView('app.medical-record.export', compact('record', 'punggungKakiKiri', 'telapakKakiKiri', 'punggungKakiKanan', 'telapakKakiKanan'))
             ->setPaper('a4', 'portrait');
     
-        // Unduh PDF dengan nama file yang sesuai
         return $pdf->download('rekam_medis_pasien.pdf');
     }
-    
-    
 }

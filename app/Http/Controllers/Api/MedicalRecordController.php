@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -13,16 +12,19 @@ class MedicalRecordController extends Controller
         $medicalRecords = MedicalRecord::all();
         return response()->json($medicalRecords);
     }
+
     public function index()
     {
         $patient = auth()->user()->patient;
 
-        // Cek apakah profil pasien lengkap
         if (!$this->isProfileComplete($patient)) {
             return response()->json(['message' => 'Please complete your profile before accessing medical records.'], 400);
         }
 
-        $medicalRecords = MedicalRecord::where('patient_id', $patient->id)->get();
+        $medicalRecords = MedicalRecord::where('patient_id', $patient->id)
+            ->orderBy('created_at', 'desc')
+            ->take(2)
+            ->get();
         return response()->json($medicalRecords);
     }
 
@@ -30,7 +32,6 @@ class MedicalRecordController extends Controller
     {
         $patient = auth()->user()->patient;
 
-        // Cek apakah profil pasien lengkap
         if (!$this->isProfileComplete($patient)) {
             return response()->json(['message' => 'Please complete your profile before accessing medical records.'], 400);
         }
@@ -40,58 +41,101 @@ class MedicalRecordController extends Controller
     }
 
     public function store(Request $request)
-    {
+    { 
+        \Log::info('Store method called');
+
         $patient = auth()->user()->patient;
 
-        // Cek apakah profil pasien lengkap
         if (!$this->isProfileComplete($patient)) {
+            \Log::warning('Profile incomplete for patient ID: ' . $patient->id);
             return response()->json(['message' => 'Please complete your profile before creating a medical record.'], 400);
         }
 
-        // Validasi input rekam medis
-        $request->validate([
-            'jariJari1' => 'required',
-            'jariJari3' => 'required',
-            'jariJari5' => 'required',
-            'dorsalPedis' => 'required',
-            'plantar' => 'required',
-            'deformitasKanan' => 'required',
-            'deformitasKiri' => 'required',
-        ]);
+        \Log::info('Profile complete for patient ID: ' . $patient->id);
 
-        // Hitung skor risiko berdasarkan input
+        // $request->validate([
+        //     'jariJari1' => 'required|string',
+        //     'jariJari3' => 'required|string',
+        //     'jariJari5' => 'required|string',
+        //     'dorsalPedis' => 'required|string',
+        //     'plantar' => 'required|string',
+        //     'deformitasKanan' => 'required|string',
+        //     'deformitasKiri' => 'required|string',
+        //     'punggung_kaki_kiri' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        //     'telapak_kaki_kiri' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        //     'punggung_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        //     'telapak_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        // ]);
+
+        \Log::info('Request validated for patient ID: ' . $patient->id);
+
         $angiopatiScore = ($request->jariJari1 === '-' || $request->jariJari3 === '-' || $request->jariJari5 === '-') ? 1 : 0;
         $neuropatiScore = ($request->dorsalPedis === '-' || $request->plantar === '-') ? 1 : 0;
         $deformitasScore = ($request->deformitasKanan === '+' || $request->deformitasKiri === '+') ? 2 : 0;
-
+    
         $totalScore = $angiopatiScore + $neuropatiScore + $deformitasScore;
 
-        // Kategorisasi risiko
+        \Log::info('Scores calculated for patient ID: ' . $patient->id . ' - Angiopati: ' . $angiopatiScore . ', Neuropati: ' . $neuropatiScore . ', Deformitas: ' . $deformitasScore);
+
+        $kategori = 0;
+        $hasil = "Tidak Berisiko";
         if ($totalScore === 0) {
-            $kategori = 'Tidak Berisiko';
+            $kategori = 0;
+            $hasil = "Tidak Berisiko";
         } elseif ($totalScore === 1) {
-            $kategori = 'Risiko Rendah';
+            $kategori = 1;
+            $hasil = "Risiko Rendah";
         } elseif ($totalScore === 2) {
-            $kategori = 'Risiko Sedang';
+            $kategori = 2;
+            $hasil = "Risiko Sedang";
         } else {
-            $kategori = 'Risiko Tinggi';
+            $kategori = 3;
+            $hasil = "Risiko Tinggi";
         }
 
-        // Simpan rekam medis
+        \Log::info('Risk category determined for patient ID: ' . $patient->id . ' - Category: ' . $kategori . ', Result: ' . $hasil);
+
         $medicalRecord = MedicalRecord::create([
             'patient_id' => $patient->id,
             'angiopati' => $request->jariJari1 . ', ' . $request->jariJari3 . ', ' . $request->jariJari5,
             'neuropati' => $request->dorsalPedis . ', ' . $request->plantar,
             'deformitas' => $request->deformitasKanan . ', ' . $request->deformitasKiri,
             'kategori_risiko' => $kategori,
+            'hasil' => $hasil,
         ]);
 
-        return response()->json(['message' => 'Medical record created successfully', 'record' => $medicalRecord]);
+        \Log::info('Medical record created for patient ID: ' . $patient->id . ' - Record ID: ' . $medicalRecord->id);
+
+        if ($request->hasFile('punggung_kaki_kiri')) {
+            $this->storeFile($medicalRecord, $request->file('punggung_kaki_kiri'), 'punggung-kaki-kiri', 'punggung_kaki_kiri');
+            \Log::info('File stored for punggung_kaki_kiri for record ID: ' . $medicalRecord->id);
+        }
+        if ($request->hasFile('telapak_kaki_kiri')) {
+            $this->storeFile($medicalRecord, $request->file('telapak_kaki_kiri'), 'telapak-kaki-kiri', 'telapak_kaki_kiri');
+            \Log::info('File stored for telapak_kaki_kiri for record ID: ' . $medicalRecord->id);
+        }
+        if ($request->hasFile('punggung_kaki_kanan')) {
+            $this->storeFile($medicalRecord, $request->file('punggung_kaki_kanan'), 'punggung-kaki-kanan', 'punggung_kaki_kanan');
+            \Log::info('File stored for punggung_kaki_kanan for record ID: ' . $medicalRecord->id);
+        }
+        if ($request->hasFile('telapak_kaki_kanan')) {
+            $this->storeFile($medicalRecord, $request->file('telapak_kaki_kanan'), 'telapak-kaki-kanan', 'telapak_kaki_kanan');
+            \Log::info('File stored for telapak_kaki_kanan for record ID: ' . $medicalRecord->id);
+        }
+
+        \Log::info('Store method completed for patient ID: ' . $patient->id);
+
+        return response()->json(['message' => 'Medical record created successfully', 'record' => $medicalRecord, 'hasil' => $hasil]);
     }
 
-    /**
-     * Helper untuk memeriksa apakah profil pasien lengkap
-     */
+    private function storeFile($medicalRecord, $file, $folder, $fileName)
+    {
+        $medicalRecord->addMedia($file)
+            ->usingFileName($fileName . '_' . time() . '.' . $file->getClientOriginalExtension())
+            ->withCustomProperties(['patient_id' => $medicalRecord->id])
+            ->toMediaCollection($folder);
+    }
+
     private function isProfileComplete($patient)
     {
         return $patient && $patient->dob && $patient->gender && $patient->contact && $patient->address;
