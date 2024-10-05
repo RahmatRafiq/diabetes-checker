@@ -25,6 +25,11 @@ class Patient extends Model
         'gds',
         'hba1c',
         'diet_type',
+        'religion',
+        'ethnicity',
+        'marital_status',
+        'medical_condition',
+        'wound_history',
     ];
 
     protected $casts = [
