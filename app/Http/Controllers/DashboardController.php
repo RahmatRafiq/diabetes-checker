@@ -12,7 +12,7 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->hasRole('admin')) {
+        if ($user->hasRole('pasien')) {
             return $this->dashboardAdmin();
         } elseif ($user->hasRole('user')) {
             return $this->dashboardUser();
