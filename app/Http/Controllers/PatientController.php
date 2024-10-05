@@ -159,6 +159,11 @@ class PatientController extends Controller
             'gds' => 'nullable|numeric',
             'hba1c' => 'nullable|numeric',
             'diet_type' => 'nullable|string|max:255',
+            'religion' => 'nullable|string|max:255',
+            'ethnicity' => 'nullable|string|max:255',
+            'marital_status' => 'nullable|string|max:255',
+            'medical_condition' => 'nullable|string|max:255',
+            'wound_history' => 'nullable|string|max:255',
         ]);
 
         $patient->update($request->all());
