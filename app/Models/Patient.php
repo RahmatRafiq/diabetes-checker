@@ -30,6 +30,7 @@ class Patient extends Model
         'marital_status',
         'medical_condition',
         'wound_history',
+        'wound_history_description',
     ];
 
     protected $casts = [

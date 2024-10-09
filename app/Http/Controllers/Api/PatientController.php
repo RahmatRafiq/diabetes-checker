@@ -85,6 +85,7 @@ class PatientController extends Controller
             'marital_status' => 'nullable|string|max:255',
             'medical_condition' => 'nullable|string|max:255',
             'wound_history' => 'nullable|string|max:255',
+            'wound_history_description' => 'nullable|string|max:255',
         ]);
 
         // Ambil pasien dari pengguna yang sedang login
