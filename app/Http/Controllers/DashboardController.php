@@ -39,9 +39,14 @@ class DashboardController extends Controller
         $over50 = $riskCategoryByAgeGroup->filter(function ($item) {
             return $item->age_group == '>50';
         });
+
         $dmTherapyDistribution = Dashboard::getDmTherapyDistribution();
         $bmiDistribution = Dashboard::getBmiDistribution();
         $gdsHba1cCorrelation = Dashboard::getGdsHba1cCorrelation();
+        $dmTherapyNames = $dmTherapyDistribution->pluck('dm_therapy')->toArray();
+        $dmTherapyCounts = $dmTherapyDistribution->pluck('count')->toArray();
+        $genderLabels = $genderDistribution->pluck('gender')->toArray();
+        $genderCounts = $genderDistribution->pluck('count')->toArray();
 
         return view('admin.dashboard', compact(
             'totalPatients',
@@ -49,12 +54,16 @@ class DashboardController extends Controller
             'averageAge',
             'riskCategoryDistribution',
             'riskCategoryByAgeGroup',
-            'under30',  // Data usia <30
-            'between30and50',  // Data usia 30-50
-            'over50',  // Data usia >50
+            'under30', // Data usia <30
+            'between30and50', // Data usia 30-50
+            'over50', // Data usia >50
             'dmTherapyDistribution',
             'bmiDistribution',
-            'gdsHba1cCorrelation'
+            'gdsHba1cCorrelation',
+            'dmTherapyNames', // Nama terapi DM
+            'dmTherapyCounts', // Jumlah terapi DM
+            'genderLabels', // Tambahkan label gender ke view
+            'genderCounts'
         ));
     }
 
