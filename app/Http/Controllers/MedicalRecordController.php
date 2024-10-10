@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\DataTable;
 use App\Models\MedicalRecord;
 use App\Models\Patient;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
@@ -13,6 +14,44 @@ class MedicalRecordController extends Controller
     {
         $medicalRecords = MedicalRecord::with('patient')->get();
         return view('app.medical-record.index', compact('medicalRecords'));
+    }
+    public function json(Request $request)
+    {
+        $search = $request->search['value'];
+        $query = MedicalRecord::query()
+            ->join('patients', 'medical_records.patient_id', '=', 'patients.id') // Bergabung dengan tabel patients
+            ->join('users', 'patients.user_id', '=', 'users.id') // Bergabung dengan tabel users
+            ->select('medical_records.*', 'users.name as patient_name'); // Memilih kolom yang diperlukan
+
+        // Mengatur pencarian
+        if ($request->filled('search.value')) {
+            $query->where('users.name', 'like', "%{$search}%") // Pencarian berdasarkan nama pengguna
+                ->orWhere('angiopati', 'like', "%{$search}%")
+                ->orWhere('neuropati', 'like', "%{$search}%")
+                ->orWhere('deformitas', 'like', "%{$search}%")
+                ->orWhere('kategori_risiko', 'like', "%{$search}%")
+                ->orWhere('hasil', 'like', "%{$search}%");
+        }
+
+        // Kolom yang akan digunakan untuk pengurutan
+        $columns = [
+            'patient_name', // Menggunakan alias dari join
+            'angiopati',
+            'neuropati',
+            'deformitas',
+            'kategori_risiko',
+            'hasil',
+        ];
+
+        // Mengatur pengurutan
+        if ($request->filled('order')) {
+            $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
+        }
+
+        // Mengambil data untuk DataTables
+        $data = DataTable::paginate($query, $request);
+
+        return response()->json($data);
     }
 
     public function show($id)
