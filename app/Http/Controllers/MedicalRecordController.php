@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\MediaLibrary;
 use App\Models\MedicalRecord;
 use App\Models\Patient;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
@@ -19,12 +18,32 @@ class MedicalRecordController extends Controller
     public function show($id)
     {
         $record = MedicalRecord::with('patient')->findOrFail($id);
-    
+
+        $bmi = null;
+        $bmiCategory = 'Data tidak tersedia'; // Default untuk kategori BMI
+        if ($record->patient && $record->patient->height && $record->patient->weight) {
+            // Menghitung BMI
+            $heightInMeters = $record->patient->height / 100; // Konversi dari cm ke meter
+            $bmi = $record->patient->weight / ($heightInMeters * $heightInMeters); // Rumus BMI
+            $bmi = round($bmi, 2); // Membulatkan hasil BMI ke 2 desimal
+
+            // Logika untuk menentukan kategori BMI
+            if ($bmi < 18.5) {
+                $bmiCategory = 'Underweight (Kurus)';
+            } elseif ($bmi >= 18.5 && $bmi < 25) {
+                $bmiCategory = 'Normal weight (Berat Badan Normal)';
+            } elseif ($bmi >= 25 && $bmi < 30) {
+                $bmiCategory = 'Overweight (Berat Badan Berlebih)';
+            } else {
+                $bmiCategory = 'Obesity (Obesitas)';
+            }
+        }
+
         $punggungKakiKiri = $record->getFirstMediaUrl('punggung-kaki-kiri', 'punggung_kaki_kiri') ?: null;
         $telapakKakiKiri = $record->getFirstMediaUrl('telapak-kaki-kiri', 'telapak_kaki_kiri') ?: null;
         $punggungKakiKanan = $record->getFirstMediaUrl('punggung-kaki-kanan', 'punggung_kaki_kanan') ?: null;
         $telapakKakiKanan = $record->getFirstMediaUrl('telapak-kaki-kanan', 'telapak_kaki_kanan') ?: null;
-        return view('app.medical-record.show', compact('record', 'punggungKakiKiri', 'telapakKakiKiri', 'punggungKakiKanan', 'telapakKakiKanan'));
+        return view('app.medical-record.show', compact('record', 'punggungKakiKiri', 'telapakKakiKiri', 'punggungKakiKanan', 'telapakKakiKanan', 'bmi', 'bmiCategory'));
     }
 
     public function create()
@@ -48,15 +67,15 @@ class MedicalRecordController extends Controller
             'punggung_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'telapak_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-    
+
         $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
-    
+
         $angiopatiScore = ($request->jariJari1 === '-' || $request->jariJari3 === '-' || $request->jariJari5 === '-') ? 1 : 0;
         $neuropatiScore = ($request->dorsalPedis === '-' || $request->plantar === '-') ? 1 : 0;
         $deformitasScore = ($request->deformitasKanan === '+' || $request->deformitasKiri === '+') ? 2 : 0;
-    
+
         $totalScore = $angiopatiScore + $neuropatiScore + $deformitasScore;
-    
+
         $kategori = 0;
         $hasil = "Tidak Berisiko";
         if ($totalScore === 0) {
@@ -72,7 +91,7 @@ class MedicalRecordController extends Controller
             $kategori = 3;
             $hasil = "Risiko Tinggi";
         }
-    
+
         $medicalRecord = MedicalRecord::create([
             'patient_id' => $patient->id,
             'angiopati' => $request->jariJari1 . ', ' . $request->jariJari3 . ', ' . $request->jariJari5,
@@ -81,7 +100,7 @@ class MedicalRecordController extends Controller
             'kategori_risiko' => $kategori,
             'hasil' => $hasil,
         ]);
-    
+
         if ($request->hasFile('punggung_kaki_kiri')) {
             $this->storeFile($medicalRecord, $request->file('punggung_kaki_kiri'), 'punggung-kaki-kiri', 'punggung_kaki_kiri');
         }
@@ -94,7 +113,7 @@ class MedicalRecordController extends Controller
         if ($request->hasFile('telapak_kaki_kanan')) {
             $this->storeFile($medicalRecord, $request->file('telapak_kaki_kanan'), 'telapak-kaki-kanan', 'telapak_kaki_kanan');
         }
-    
+
         return back()->with([
             'nama_pasien' => $patient->name,
             'kategori' => $kategori,
@@ -113,35 +132,63 @@ class MedicalRecordController extends Controller
     public function exportPDF($id)
     {
         $record = MedicalRecord::with('patient')->findOrFail($id);
-    
+
+        // Mengambil tinggi dan berat badan
+        $height = $record->patient->height; // Tinggi dalam cm
+        $weight = $record->patient->weight; // Berat dalam kg
+
+        // Menghitung BMI
+        $bmi = null;
+        $bmiCategory = 'Data tidak tersedia'; // Default untuk kategori BMI
+        if ($height && $weight) {
+            // Menghitung BMI
+            $heightInMeters = $height / 100; // Konversi dari cm ke meter
+            $bmi = $weight / ($heightInMeters * $heightInMeters); // Rumus BMI
+            $bmi = round($bmi, 2); // Membulatkan hasil BMI ke 2 desimal
+
+            // Logika untuk menentukan kategori BMI
+            if ($bmi < 18.5) {
+                $bmiCategory = 'Underweight (Kurus)';
+            } elseif ($bmi >= 18.5 && $bmi < 25) {
+                $bmiCategory = 'Normal weight (Berat Badan Normal)';
+            } elseif ($bmi >= 25 && $bmi < 30) {
+                $bmiCategory = 'Overweight (Berat Badan Berlebih)';
+            } else {
+                $bmiCategory = 'Obesity (Obesitas)';
+            }
+        }
+
+        // Menyimpan URL gambar media
         $punggungKakiKiri = '';
         $telapakKakiKiri = '';
         $punggungKakiKanan = '';
         $telapakKakiKanan = '';
-    
+
         if ($record->getFirstMediaUrl('punggung-kaki-kiri', 'punggung_kaki_kiri')) {
             $path = $record->getFirstMediaPath('punggung-kaki-kiri', 'punggung_kaki_kiri');
             $punggungKakiKiri = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
         }
-    
+
         if ($record->getFirstMediaUrl('punggung-kaki-kanan', 'punggung_kaki_kanan')) {
             $path = $record->getFirstMediaPath('punggung-kaki-kanan', 'punggung_kaki_kanan');
             $punggungKakiKanan = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
         }
-    
+
         if ($record->getFirstMediaUrl('telapak-kaki-kiri', 'telapak_kaki_kiri')) {
             $path = $record->getFirstMediaPath('telapak-kaki-kiri', 'telapak_kaki_kiri');
             $telapakKakiKiri = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
         }
-    
+
         if ($record->getFirstMediaUrl('telapak-kaki-kanan', 'telapak_kaki_kanan')) {
             $path = $record->getFirstMediaPath('telapak-kaki-kanan', 'telapak_kaki_kanan');
             $telapakKakiKanan = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
         }
-    
-        $pdf = PDF::loadView('app.medical-record.export', compact('record', 'punggungKakiKiri', 'telapakKakiKiri', 'punggungKakiKanan', 'telapakKakiKanan'))
+
+        // Mengirim data ke view PDF
+        $pdf = PDF::loadView('app.medical-record.export', compact('record', 'height', 'weight', 'bmi', 'bmiCategory', 'punggungKakiKiri', 'telapakKakiKiri', 'punggungKakiKanan', 'telapakKakiKanan'))
             ->setPaper('a4', 'portrait');
-    
+
         return $pdf->download('rekam_medis_pasien.pdf');
     }
+
 }
