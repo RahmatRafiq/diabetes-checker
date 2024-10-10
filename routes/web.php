@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::post('admin/role-permissions/user/json', [\App\Http\Controllers\UserController::class, 'json'])->name('user.json');
 
     Route::get('/medical-record', [\App\Http\Controllers\MedicalRecordController::class, 'index'])->name('medical-record.index');
+    Route::post('/medical-record/json', [\App\Http\Controllers\MedicalRecordController::class, 'json'])->name('medical-record.json');
     Route::get('/medical-record/create', [\App\Http\Controllers\MedicalRecordController::class, 'create'])->name('medical-record.create');
     Route::post('/medical-record/store', [\App\Http\Controllers\MedicalRecordController::class, 'store'])->name('medical-record.store');
     Route::get('/medical-record/result/{kategori}/{hasil}', [\App\Http\Controllers\MedicalRecordController::class, 'result'])->name('medical-record.result');
