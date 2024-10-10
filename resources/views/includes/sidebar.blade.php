@@ -1,13 +1,13 @@
 <nav id="sidebar" class="sidebar-wrapper">
     <div class="sidebarMenuScroll custom-scrollbar">
         <ul class="sidebar-menu">
+            @can('admin')
             <li class="{{ request()->routeIs('dashboard') ? 'active current-page' : '' }}">
                 <a href="{{ route('dashboard') }}">
                     <i class="bi bi-speedometer2"></i>
                     <span class="menu-text">Dashboard</span>
                 </a>
             </li>
-            @can('admin')
             <li class="treeview {{ request()->is('mbkm/admin/role-permissions*') ? 'active current-page open' : '' }}">
                 <a href="#" class="treeview-toggle">
                     <i class="bi bi-person-gear"></i>
