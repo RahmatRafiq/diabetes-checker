@@ -20,7 +20,7 @@ class Dashboard extends Model
     {
         return Patient::selectRaw('gender, COUNT(*) as count')
             ->groupBy('gender')
-            ->pluck('count', 'gender');
+            ->get(); 
     }
 
     public static function getAverageAge()
@@ -57,11 +57,12 @@ class Dashboard extends Model
 
     // Presentase Pasien Berdasarkan Terapi DM
     public static function getDmTherapyDistribution()
-    {
-        return Patient::selectRaw('dm_therapy, COUNT(*) as count')
-            ->groupBy('dm_therapy')
-            ->pluck('count', 'dm_therapy');
-    }
+{
+    return Patient::selectRaw('dm_therapy, COUNT(*) as count')
+        ->groupBy('dm_therapy')
+        ->get(); // Ambil semua data terapi
+}
+
 
     // BMI Analysis
     public static function getBmiDistribution()

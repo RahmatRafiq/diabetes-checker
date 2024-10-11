@@ -1,6 +1,7 @@
 <nav id="sidebar" class="sidebar-wrapper">
     <div class="sidebarMenuScroll custom-scrollbar">
         <ul class="sidebar-menu">
+            @can('admin')
             <li class="{{ request()->routeIs('dashboard') ? 'active current-page' : '' }}">
                 <a href="{{ route('dashboard') }}">
                     <i class="bi bi-speedometer2"></i>
@@ -28,22 +29,10 @@
                     </li>
                 </ul>
             </li>
-            <li class="{{ request()->routeIs('profile.edit') ? 'active current-page' : '' }}">
-                <a href="{{ route('profile.edit') }}">
-                    <i class="bi bi-person"></i>
-                    <span class="menu-text">Manajemen Profil</span>
-                </a>
-            </li>
             <li class="{{ request()->routeIs('patients.index') ? 'active current-page' : '' }}">
                 <a href="{{ route('patients.index') }}">
                     <i class="bi bi-people"></i>
                     <span class="menu-text">Daftar Pasien</span>
-                </a>
-            </li>
-            <li class="{{ request()->routeIs('medical-record.create') ? 'active current-page' : '' }}">
-                <a href="{{ route('medical-record.create') }}">
-                    <i class="bi bi-clipboard-plus"></i> <!-- Ganti dengan ikon yang sesuai -->
-                    <span class="menu-text">Pemeriksaan DFU</span>
                 </a>
             </li>
             <li class="{{ request()->routeIs('medical-records.index') ? 'active current-page' : '' }}">
@@ -52,12 +41,27 @@
                     <span class="menu-text">Rekam Medis</span>
                 </a>
             </li>
+            @endcan
+            <li class="{{ request()->routeIs('profile.edit') ? 'active current-page' : '' }}">
+                <a href="{{ route('profile.edit') }}">
+                    <i class="bi bi-person"></i>
+                    <span class="menu-text">Manajemen Profil</span>
+                </a>
+            </li>
+            @can('pasien')
+            <li class="{{ request()->routeIs('medical-record.create') ? 'active current-page' : '' }}">
+                <a href="{{ route('medical-record.create') }}">
+                    <i class="bi bi-clipboard-plus"></i> <!-- Ganti dengan ikon yang sesuai -->
+                    <span class="menu-text">Pemeriksaan DFU</span>
+                </a>
+            </li>
             <li class="{{ request()->routeIs('patient.profile.edit') ? 'active current-page' : '' }}">
                 <a href="{{ route('patient.profile.edit') }}">
                     <i class="bi bi-person-badge"></i> <!-- Ganti dengan ikon yang sesuai -->
-                    <span class="menu-text">Edit Profil Pasien</span>
+                    <span class="menu-text">Edit data demografi anda</span>
                 </a>
             </li>
+            @endcan
         </ul>
     </div>
 </nav>

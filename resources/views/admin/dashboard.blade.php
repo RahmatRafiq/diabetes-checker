@@ -209,9 +209,9 @@
 
         renderDonutChart(
             "#genderChart",
-            [{{ $genderDistribution->get('male', 0) }}, {{ $genderDistribution->get('female', 0) }}],
-            ['Laki-laki', 'Perempuan'],
-            ['#1E90FF', '#FF69B4']
+            @json($genderCounts), // Menggunakan hitungan gender dari database
+            @json($genderLabels), // Menggunakan label gender dari database
+            ['#1E90FF', '#FF69B4'] // Anda dapat menambahkan lebih banyak warna sesuai jumlah jenis kelamin
         );
 
         renderDonutChart(
@@ -268,9 +268,9 @@
 
         renderDonutChart(
             "#dmTherapyChart",
-            @json(array_values($dmTherapyDistribution->toArray())),
-            ['Insulin','Obat'],
-            ['#FF5733', '#33FF57']
+            @json($dmTherapyCounts), // Menggunakan hitungan terapi dari database
+            @json($dmTherapyNames),  // Menggunakan nama terapi dari database
+            ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#33FFA1'] // Pastikan jumlah warna sesuai dengan jumlah item
         );
 
         var gdsHba1cChartOptions = {
@@ -288,14 +288,17 @@
                 title: {
                     text: 'GDS'
                 },
-                tickAmount: 10,
+                tickAmount: 20,
                 min: 0,
-                max: 200,
+                max: 600,
             },
             yaxis: {
                 title: {
                     text: 'HbA1c'
-                }
+                },
+                tickAmount: 10,
+                min: 0,
+                max: 100,
             },
             markers: {
                 size: 5,
