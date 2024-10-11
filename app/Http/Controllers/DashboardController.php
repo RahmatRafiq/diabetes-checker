@@ -14,8 +14,8 @@ class DashboardController extends Controller
 
         if ($user->hasRole('admin')) {
             return $this->dashboardAdmin();
-        } elseif ($user->hasRole('user')) {
-            return $this->dashboardUser();
+        } elseif ($user->hasRole('pasien')) {
+            return $this->dashboardPasien();
         } else {
             abort(403, 'Unauthorized action.');
         }
@@ -66,11 +66,14 @@ class DashboardController extends Controller
             'genderCounts'
         ));
     }
-
-    public function dashboardUser()
+public function dashboardPasien()
     {
-        return view('user.dashboard', [
-        ]);
+        $patient = Auth::user()->patient;
+        $medicalRecords = $patient->medicalRecords;
+        $latestMedicalRecord = $medicalRecords->first();
+        $latestMedicalRecord->load('patient');
+
+        return view('app.medical-record.create', compact('patient', 'latestMedicalRecord'));
     }
 
 }
