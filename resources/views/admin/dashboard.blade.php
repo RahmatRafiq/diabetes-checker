@@ -140,6 +140,10 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         function renderDonutChart(element, series, labels, colors) {
+            if (!series || series.length === 0 || !labels || labels.length === 0) {
+                document.querySelector(element).innerHTML = '<p class="text-center">Data tidak diketahui</p>';
+                return;
+            }
             var options = {
                 series: series,
                 chart: {
@@ -173,6 +177,10 @@
         }
 
         function renderFullWidthDonutChart(element, series, labels, colors) {
+            if (!series || series.length === 0 || !labels || labels.length === 0) {
+                document.querySelector(element).innerHTML = '<p class="text-center">Data tidak diketahui</p>';
+                return;
+            }
             var options = {
                 series: series,
                 chart: {
@@ -270,8 +278,8 @@
             "#dmTherapyChart",
             @json($dmTherapyCounts), // Menggunakan hitungan terapi dari database
             @json($dmTherapyNames),  // Menggunakan nama terapi dari database
-            ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#33FFA1'] // Pastikan jumlah warna sesuai dengan jumlah item
-        );
+            ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#33FFA1'] // Pastikan jumlah warna sesuai dengan jumlah item // Pastikan jumlah warna sesuai dengan jumlah item
+    );
 
         var gdsHba1cChartOptions = {
             series: [{
