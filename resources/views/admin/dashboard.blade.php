@@ -281,41 +281,6 @@
             ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#33FFA1'] // Pastikan jumlah warna sesuai dengan jumlah item // Pastikan jumlah warna sesuai dengan jumlah item
     );
 
-        var gdsHba1cChartOptions = {
-            series: [{
-                name: 'Korelasi GDS dan HbA1c',
-                data: @json($gdsHba1cCorrelation->map(function($item) {
-                    return [$item->gds, $item->hba1c];
-                }))
-            }],
-            chart: {
-                type: 'scatter',
-                height: 350,
-            },
-            xaxis: {
-                title: {
-                    text: 'GDS'
-                },
-                tickAmount: 20,
-                min: 0,
-                max: 600,
-            },
-            yaxis: {
-                title: {
-                    text: 'HbA1c'
-                },
-                tickAmount: 10,
-                min: 0,
-                max: 100,
-            },
-            markers: {
-                size: 5,
-                colors: ['#FF0000']
-            }
-        };
-
-        var gdsHba1cChart = new ApexCharts(document.querySelector("#gdsHba1cChart"), gdsHba1cChartOptions);
-        gdsHba1cChart.render();
     });
 </script>
 @endpush
