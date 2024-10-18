@@ -35,6 +35,7 @@ class MedicalRecordController extends Controller
 
         // Kolom yang akan digunakan untuk pengurutan
         $columns = [
+            'id',
             'patient_name', // Menggunakan alias dari join
             'angiopati',
             'neuropati',
@@ -78,11 +79,9 @@ class MedicalRecordController extends Controller
             }
         }
 
-        $punggungKakiKiri = $record->getFirstMediaUrl('punggung-kaki-kiri', 'punggung_kaki_kiri') ?: null;
-        $telapakKakiKiri = $record->getFirstMediaUrl('telapak-kaki-kiri', 'telapak_kaki_kiri') ?: null;
-        $punggungKakiKanan = $record->getFirstMediaUrl('punggung-kaki-kanan', 'punggung_kaki_kanan') ?: null;
-        $telapakKakiKanan = $record->getFirstMediaUrl('telapak-kaki-kanan', 'telapak_kaki_kanan') ?: null;
-        return view('app.medical-record.show', compact('record', 'punggungKakiKiri', 'telapakKakiKiri', 'punggungKakiKanan', 'telapakKakiKanan', 'bmi', 'bmiCategory'));
+        $punggungKaki = $record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki') ?: null;
+        $telapakKaki = $record->getFirstMediaUrl('telapak-kaki', 'telapak_kaki') ?: null;
+        return view('app.medical-record.show', compact('record', 'punggungKaki', 'telapakKaki', 'bmi', 'bmiCategory'));
     }
 
     public function create()
@@ -211,24 +210,14 @@ class MedicalRecordController extends Controller
         $punggungKakiKanan = '';
         $telapakKakiKanan = '';
 
-        if ($record->getFirstMediaUrl('punggung-kaki-kiri', 'punggung_kaki_kiri')) {
-            $path = $record->getFirstMediaPath('punggung-kaki-kiri', 'punggung_kaki_kiri');
-            $punggungKakiKiri = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
+        if ($record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki')) {
+            $path = $record->getFirstMediaPath('punggung-kaki', 'punggung_kaki');
+            $punggungKaki = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
         }
 
-        if ($record->getFirstMediaUrl('punggung-kaki-kanan', 'punggung_kaki_kanan')) {
-            $path = $record->getFirstMediaPath('punggung-kaki-kanan', 'punggung_kaki_kanan');
-            $punggungKakiKanan = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
-        }
-
-        if ($record->getFirstMediaUrl('telapak-kaki-kiri', 'telapak_kaki_kiri')) {
-            $path = $record->getFirstMediaPath('telapak-kaki-kiri', 'telapak_kaki_kiri');
-            $telapakKakiKiri = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
-        }
-
-        if ($record->getFirstMediaUrl('telapak-kaki-kanan', 'telapak_kaki_kanan')) {
-            $path = $record->getFirstMediaPath('telapak-kaki-kanan', 'telapak_kaki_kanan');
-            $telapakKakiKanan = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
+        if ($record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki')) {
+            $path = $record->getFirstMediaPath('punggung-kaki', 'punggung_kaki');
+            $punggungKaki = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
         }
 
         // Mengirim data ke view PDF
