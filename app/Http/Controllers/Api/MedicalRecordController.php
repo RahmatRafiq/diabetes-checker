@@ -104,10 +104,10 @@ class MedicalRecordController extends Controller
         \Log::info('Medical record created', ['record_id' => $medicalRecord->id]);
 
         if ($request->punggung_kaki) {
-            $this->storeBase64File($medicalRecord, $request->punggung_kaki_kiri, 'punggung-kaki', 'punggung_kaki');
+            $this->storeBase64File($medicalRecord, $request->punggung_kaki, 'punggung-kaki', 'punggung_kaki');
         }
         if ($request->telapak_kaki) {
-            $this->storeBase64File($medicalRecord, $request->telapak_kaki_kiri, 'telapak-kaki', 'telapak_kaki');
+            $this->storeBase64File($medicalRecord, $request->telapak_kaki, 'telapak-kaki', 'telapak_kaki');
         }
 
         // Mengembalikan response ke frontend
