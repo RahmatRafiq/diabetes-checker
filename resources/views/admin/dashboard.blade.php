@@ -1,8 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<h1 class="h3 mb-3">Ini Halaman Dashboard Untuk Admin</h1>
-
 <div class="row gx-3">
     <div class="col-xl-6 col-sm-12 col-12">
         <div class="card mb-3 card-custom background-gradient-1">
