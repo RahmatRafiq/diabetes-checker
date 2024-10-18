@@ -101,10 +101,12 @@ class MedicalRecordController extends Controller
             'plantar' => 'required',
             'deformitasKanan' => 'required',
             'deformitasKiri' => 'required',
-            'punggung_kaki_kiri' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'telapak_kaki_kiri' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'punggung_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'telapak_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'punggung_kaki' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'telapak_kaki' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'punggung_kaki_kiri' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'telapak_kaki_kiri' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'punggung_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'telapak_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
@@ -140,18 +142,24 @@ class MedicalRecordController extends Controller
             'hasil' => $hasil,
         ]);
 
-        if ($request->hasFile('punggung_kaki_kiri')) {
-            $this->storeFile($medicalRecord, $request->file('punggung_kaki_kiri'), 'punggung-kaki-kiri', 'punggung_kaki_kiri');
+        if ($request->hasFile('punggung_kaki')) {
+            $this->storeFile($medicalRecord, $request->file('punggung_kaki'), 'punggung-kaki', 'punggung_kaki');
         }
-        if ($request->hasFile('telapak_kaki_kiri')) {
-            $this->storeFile($medicalRecord, $request->file('telapak_kaki_kiri'), 'telapak-kaki-kiri', 'telapak_kaki_kiri');
+        if ($request->hasFile('telapak_kaki')) {
+            $this->storeFile($medicalRecord, $request->file('telapak_kaki'), 'telapak-kaki', 'telapak_kaki');
         }
-        if ($request->hasFile('punggung_kaki_kanan')) {
-            $this->storeFile($medicalRecord, $request->file('punggung_kaki_kanan'), 'punggung-kaki-kanan', 'punggung_kaki_kanan');
-        }
-        if ($request->hasFile('telapak_kaki_kanan')) {
-            $this->storeFile($medicalRecord, $request->file('telapak_kaki_kanan'), 'telapak-kaki-kanan', 'telapak_kaki_kanan');
-        }
+        // if ($request->hasFile('punggung_kaki_kiri')) {
+        //     $this->storeFile($medicalRecord, $request->file('punggung_kaki_kiri'), 'punggung-kaki-kiri', 'punggung_kaki_kiri');
+        // }
+        // if ($request->hasFile('telapak_kaki_kiri')) {
+        //     $this->storeFile($medicalRecord, $request->file('telapak_kaki_kiri'), 'telapak-kaki-kiri', 'telapak_kaki_kiri');
+        // }
+        // if ($request->hasFile('punggung_kaki_kanan')) {
+        //     $this->storeFile($medicalRecord, $request->file('punggung_kaki_kanan'), 'punggung-kaki-kanan', 'punggung_kaki_kanan');
+        // }
+        // if ($request->hasFile('telapak_kaki_kanan')) {
+        //     $this->storeFile($medicalRecord, $request->file('telapak_kaki_kanan'), 'telapak-kaki-kanan', 'telapak_kaki_kanan');
+        // }
 
         return back()->with([
             'nama_pasien' => $patient->name,
