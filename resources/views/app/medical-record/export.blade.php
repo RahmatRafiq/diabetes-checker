@@ -160,11 +160,11 @@
                 @endif
             </div>
             <div class="column text-center">
-                @if($punggungKaki)
-                <p><strong>Punggung Kaki:</strong></p>
-                <img src="{{ $punggungKaki }}" alt="Punggung Kaki" class="img-fluid">
+                @if($telapakKaki)
+                <p><strong>Telapak Kaki:</strong></p>
+                <img src="{{ $telapakKaki }}" alt="Telapak Kaki" class="img-fluid">
                 @else
-                <p>Foto Punggung Kaki tidak tersedia.</p>
+                <p>Foto Telapak Kaki tidak tersedia.</p>
                 @endif
             </div>
         </div>
