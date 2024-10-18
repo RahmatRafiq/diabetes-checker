@@ -92,20 +92,12 @@
             </div>
             <div class="card-body">
                 <div class="mb-3">
-                    <label for="punggung_kaki_kiri" class="form-label">Punggung Kaki Kiri: </label>
-                    <input type="file" name="punggung_kaki_kiri" id="punggung_kaki_kiri" class="form-control" accept="image/*">
+                    <label for="punggung_kaki" class="form-label">Punggung Kaki: </label>
+                    <input type="file" name="punggung_kaki" id="punggung_kaki" class="form-control" accept="image/*">
                 </div>
                 <div class="mb-3">
-                    <label for="telapak_kaki_kiri" class="form-label">Telapak Kaki Kiri: </label>
-                    <input type="file" name="telapak_kaki_kiri" id="telapak_kaki_kiri" class="form-control" accept="image/*">
-                </div>
-                <div class="mb-3">
-                    <label for="punggung_kaki_kanan" class="form-label">Punggung Kaki Kanan: </label>
-                    <input type="file" name="punggung_kaki_kanan" id="punggung_kaki_kanan" class="form-control" accept="image/*">
-                </div>
-                <div class="mb-3">
-                    <label for="telapak_kaki_kanan" class="form-label">Telapak Kaki Kanan: </label>
-                    <input type="file" name="telapak_kaki_kanan" id="telapak_kaki_kanan" class="form-control" accept="image/*">
+                    <label for="telapak_kaki" class="form-label">Telapak Kaki: </label>
+                    <input type="file" name="telapak_kaki" id="telapak_kaki" class="form-control" accept="image/*">
                 </div>
             </div>
         </div>

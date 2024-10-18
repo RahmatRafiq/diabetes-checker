@@ -152,42 +152,22 @@
         <h4 class="section-title">Foto Kaki Pasien</h4>
         <div class="row">
             <div class="column text-center">
-                @if($punggungKakiKiri)
-                <p><strong>Punggung Kaki Kiri:</strong></p>
-                <img src="{{ $punggungKakiKiri }}" alt="Punggung Kaki Kiri" class="img-fluid">
+                @if($punggungKaki)
+                <p><strong>Punggung Kaki:</strong></p>
+                <img src="{{ $punggungKaki }}" alt="Punggung Kaki" class="img-fluid">
                 @else
-                <p>Foto Punggung Kaki Kiri tidak tersedia.</p>
+                <p>Foto Punggung Kaki tidak tersedia.</p>
                 @endif
             </div>
             <div class="column text-center">
-                @if($punggungKakiKanan)
-                <p><strong>Punggung Kaki Kanan:</strong></p>
-                <img src="{{ $punggungKakiKanan }}" alt="Punggung Kaki Kanan" class="img-fluid">
+                @if($punggungKaki)
+                <p><strong>Punggung Kaki:</strong></p>
+                <img src="{{ $punggungKaki }}" alt="Punggung Kaki" class="img-fluid">
                 @else
-                <p>Foto Punggung Kaki Kanan tidak tersedia.</p>
+                <p>Foto Punggung Kaki tidak tersedia.</p>
                 @endif
             </div>
         </div>
-
-        <div class="row">
-            <div class="column text-center">
-                @if($telapakKakiKiri)
-                <p><strong>Telapak Kaki Kiri:</strong></p>
-                <img src="{{ $telapakKakiKiri }}" alt="Telapak Kaki Kiri" class="img-fluid">
-                @else
-                <p>Foto Telapak Kaki Kiri tidak tersedia.</p>
-                @endif
-            </div>
-            <div class="column text-center">
-                @if($telapakKakiKanan)
-                <p><strong>Telapak Kaki Kanan:</strong></p>
-                <img src="{{ $telapakKakiKanan }}" alt="Telapak Kaki Kanan" class="img-fluid">
-                @else
-                <p>Foto Telapak Kaki Kanan tidak tersedia.</p>
-                @endif
-            </div>
-        </div>
-
     </div>
 </body>
 
