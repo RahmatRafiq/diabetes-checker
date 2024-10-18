@@ -2,12 +2,6 @@
 
 @section('content')
 <div class="card mb-3">
-    <div class="alert alert-info" role="alert">
-        <h4 class="alert-heading">Customize Role Badges</h4>
-        <p>You can change the color of the role badges by editing the <code>assets/css/badges.css</code> file.</p>
-        <hr>
-        <p class="mb-0">Make sure to refresh the page after making changes to see the updated badge colors.</p>
-    </div>
     <div class="card-body">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title">User Data</h5>

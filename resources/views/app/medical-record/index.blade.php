@@ -2,9 +2,6 @@
 
 @section('content')
 <div class="card mb-3">
-    <div class="alert alert-info" role="alert">
-        <h4 class="alert-heading">Data Rekam Medis Pasien</h4>
-    </div>
     <div class="card-body">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title">Data Rekam Medis Pasien</h5>
@@ -13,6 +10,7 @@
             <table class="table styled-table" id="medical-records">
                 <thead>
                     <tr>
+                        <th>Id</th>
                         <th>Nama Pasien</th>
                         <th>Angiopati</th>
                         <th>Neuropati</th>
@@ -52,6 +50,7 @@
                 }
             },
             columns: [
+                { data: 'id' },
                 { data: 'patient_name' },
                 { data: 'angiopati' },
                 { data: 'neuropati' },
@@ -64,8 +63,7 @@
                     searchable: false,
                     render: function(data, type, row) {
                         const detailButton = '<a href="{{ route('medical-records.show', ':id') }}" class="btn btn-info btn-sm me-2">Detail</a>'.replace(':id', row.id);
-                        const editButton = '<a href="/medical-records/' + row.id + '/edit" class="btn btn-primary btn-sm">Edit</a>';
-                        return '<div class="d-flex">' + detailButton + editButton + '</div>';
+                        return '<div class="d-flex">' + detailButton + '</div>';
                     }
                 }
             ]
