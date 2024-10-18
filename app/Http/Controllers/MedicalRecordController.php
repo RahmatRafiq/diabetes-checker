@@ -215,13 +215,13 @@ class MedicalRecordController extends Controller
             $punggungKaki = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
         }
 
-        if ($record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki')) {
-            $path = $record->getFirstMediaPath('punggung-kaki', 'punggung_kaki');
-            $punggungKaki = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
+        if ($record->getFirstMediaUrl('telapak-kaki', 'telapak_kaki')) {
+            $path = $record->getFirstMediaPath('telapak-kaki', 'telapak_kaki');
+            $telapakKaki = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
         }
 
         // Mengirim data ke view PDF
-        $pdf = PDF::loadView('app.medical-record.export', compact('record', 'height', 'weight', 'bmi', 'bmiCategory', 'punggungKakiKiri', 'telapakKakiKiri', 'punggungKakiKanan', 'telapakKakiKanan'))
+        $pdf = PDF::loadView('app.medical-record.export', compact('record', 'height', 'weight', 'bmi', 'bmiCategory', 'punggungKaki', 'telapakKaki'))
             ->setPaper('a4', 'portrait');
 
         return $pdf->download('rekam_medis_pasien.pdf');
