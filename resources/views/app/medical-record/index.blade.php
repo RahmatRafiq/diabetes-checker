@@ -12,6 +12,9 @@
                     <tr>
                         <th>Id</th>
                         <th>Nama Pasien</th>
+                        <th>Angiopati</th> <!-- Tambahkan kolom angiopati -->
+                        <th>Neuropati</th> <!-- Tambahkan kolom neuropati -->
+                        <th>Deformitas</th> <!-- Tambahkan kolom deformitas -->
                         <th>Kategori Risiko</th>
                         <th>Hasil</th>
                         <th>Aksi</th>
@@ -49,6 +52,33 @@
             columns: [
                 { data: 'id' },
                 { data: 'patient_name' },
+                { 
+            data: 'angiopati', 
+            render: function(data) {
+                if (!data || data.dorsal === null || data.plantar === null) {
+                    return 'Data tidak tersedia';  // Jika data angiopati null
+                }
+                return 'Dorsal: ' + data.dorsal + ', Plantar: ' + data.plantar;
+            }
+        },
+        { 
+            data: 'neuropati', 
+            render: function(data) {
+                if (!data || data.jariJari1 === null || data.jariJari3 === null || data.jariJari5 === null) {
+                    return 'Data tidak tersedia';  // Jika data neuropati null
+                }
+                return 'Jari1: ' + data.jariJari1 + ', Jari3: ' + data.jariJari3 + ', Jari5: ' + data.jariJari5;
+            }
+        },
+        { 
+            data: 'deformitas', 
+            render: function(data) {
+                if (!data || data.kiri === null || data.kanan === null) {
+                    return 'Data tidak tersedia';  // Jika data deformitas null
+                }
+                return 'Kiri: ' + data.kiri + ', Kanan: ' + data.kanan;
+            }
+        },
                 { data: 'kategori_risiko' },
                 { data: 'hasil' },
                 { 

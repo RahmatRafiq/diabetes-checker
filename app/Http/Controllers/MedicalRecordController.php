@@ -35,7 +35,10 @@ class MedicalRecordController extends Controller
         // Kolom yang akan digunakan untuk pengurutan
         $columns = [
             'id',
-            'patient_name', // Menggunakan alias dari join
+            'patient_name',
+            'angiopati', // Tambahkan angiopati
+            'neuropati', // Tambahkan neuropati
+            'deformitas', // Tambahkan deformitas // Menggunakan alias dari join
             'kategori_risiko',
             'hasil',
         ];
