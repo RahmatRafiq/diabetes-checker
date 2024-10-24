@@ -21,9 +21,9 @@ class MedicalRecordController extends Controller
     {
         $search = $request->search['value'];
         $query = MedicalRecord::query()
-            ->join('patients', 'medical_records.patient_id', '=', 'patients.id')
-            ->join('users', 'patients.user_id', '=', 'users.id')
-            ->select('medical_records.*', 'users.name as patient_name');
+            ->join('patients', 'medical_records.patient_id', '=', 'patients.id') // Bergabung dengan tabel patients
+            ->join('users', 'patients.user_id', '=', 'users.id') // Bergabung dengan tabel users
+            ->select('medical_records.*', 'users.name as patient_name'); // Memilih kolom yang diperlukan
 
         // Mengatur pencarian
         if ($request->filled('search.value')) {
@@ -38,7 +38,7 @@ class MedicalRecordController extends Controller
         // Kolom yang akan digunakan untuk pengurutan
         $columns = [
             'id',
-            'patient_name',
+            'patient_name', // Menggunakan alias dari join
             'angiopati',
             'neuropati',
             'deformitas',
@@ -51,7 +51,7 @@ class MedicalRecordController extends Controller
             $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
         }
 
-        // Memproses data sebelum dikirim ke DataTables
+        // Mengambil data untuk DataTables
         $data = $query->get()->map(function ($record) {
             // Convert the array data into readable strings
             $record->angiopati = 'Dorsal: ' . $record->angiopati['dorsal'] . ', Plantar: ' . $record->angiopati['plantar'];
@@ -59,10 +59,6 @@ class MedicalRecordController extends Controller
             $record->deformitas = 'Kiri: ' . $record->deformitas['kiri'] . ', Kanan: ' . $record->deformitas['kanan'];
             return $record;
         });
-
-        // Mengambil data untuk DataTables dengan paginasi
-        $data = $query->paginate($request->length);
-
         return response()->json($data);
     }
 
