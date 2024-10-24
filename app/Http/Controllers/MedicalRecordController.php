@@ -61,7 +61,7 @@ class MedicalRecordController extends Controller
         });
 
         // Mengambil data untuk DataTables dengan paginasi
-        $data = DataTable::paginate($data, $request);
+        $data = $query->paginate($request->length);
 
         return response()->json($data);
     }
