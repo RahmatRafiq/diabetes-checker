@@ -42,8 +42,6 @@ class MedicalRecordController extends Controller
     }
     public function store(Request $request)
     {
-        \Log::info('Store method called');
-
         // Validasi data
         $request->validate([
             'jariJari1' => 'required|string',
@@ -57,15 +55,12 @@ class MedicalRecordController extends Controller
             'telapak_kaki' => 'nullable|string',
         ]);
 
-        \Log::info('Request validated', $request->all());
-
-        // Ambil data pasien dari pengguna yang login
+        // Ambil data pasien
         $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
-        \Log::info('Patient found', ['patient_id' => $patient->id]);
 
         // Perhitungan skor risiko
-        $angiopatiScore = ($request->jariJari1 === '-' || $request->jariJari3 === '-' || $request->jariJari5 === '-') ? 1 : 0;
-        $neuropatiScore = ($request->dorsalPedis === '-' || $request->plantar === '-') ? 1 : 0;
+        $angiopatiScore = ($request->dorsalPedis === '-' || $request->plantar === '-') ? 1 : 0;
+        $neuropatiScore = ($request->jariJari1 === '-' || $request->jariJari3 === '-' || $request->jariJari5 === '-') ? 1 : 0;
         $deformitasScore = ($request->deformitasKanan === '+' || $request->deformitasKiri === '+') ? 2 : 0;
 
         $totalScore = $angiopatiScore + $neuropatiScore + $deformitasScore;
@@ -84,17 +79,17 @@ class MedicalRecordController extends Controller
             $hasil = "Risiko Tinggi";
         }
 
-        // Simpan rekam medis dengan nilai deskriptif
+        // Simpan rekam medis dengan data yang tepat
         $medicalRecord = MedicalRecord::create([
             'patient_id' => $patient->id,
             'angiopati' => json_encode([
+                'dorsal' => ($request->dorsalPedis === '-' ? 'Tidak' : 'Ya'),
+                'plantar' => ($request->plantar === '-' ? 'Tidak' : 'Ya'),
+            ]),
+            'neuropati' => json_encode([
                 'jariJari1' => ($request->jariJari1 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
                 'jariJari3' => ($request->jariJari3 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
                 'jariJari5' => ($request->jariJari5 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
-            ]),
-            'neuropati' => json_encode([
-                'dorsal' => ($request->dorsalPedis === '-' ? 'Tidak' : 'Ya'),
-                'plantar' => ($request->plantar === '-' ? 'Tidak' : 'Ya'),
             ]),
             'deformitas' => json_encode([
                 'kiri' => ($request->deformitasKiri === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
@@ -104,8 +99,6 @@ class MedicalRecordController extends Controller
             'hasil' => $hasil,
         ]);
 
-        \Log::info('Medical record created', ['record_id' => $medicalRecord->id]);
-
         // Simpan gambar jika ada
         if ($request->punggung_kaki) {
             $this->storeBase64File($medicalRecord, $request->punggung_kaki, 'punggung-kaki', 'punggung_kaki');
@@ -114,8 +107,7 @@ class MedicalRecordController extends Controller
             $this->storeBase64File($medicalRecord, $request->telapak_kaki, 'telapak-kaki', 'telapak_kaki');
         }
 
-        // Mengembalikan response ke frontend
-        \Log::info('Store method completed for patient ID: ' . $patient->id);
+        // Mengembalikan response
         return response()->json([
             'message' => 'Medical record created successfully',
             'kategori' => $kategori,
