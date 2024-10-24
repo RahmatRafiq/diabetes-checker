@@ -87,23 +87,22 @@ class MedicalRecordController extends Controller
         // Simpan rekam medis dengan nilai deskriptif
         $medicalRecord = MedicalRecord::create([
             'patient_id' => $patient->id,
-            'angiopati' => [
+            'angiopati' => json_encode([
                 'jariJari1' => ($request->jariJari1 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
                 'jariJari3' => ($request->jariJari3 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
                 'jariJari5' => ($request->jariJari5 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
-            ],
-            'neuropati' => [
-                'dorsal' => ($request->dorsalPedis === '-' ? 'Dorsal Tidak' : 'Dorsal Ya'),
-                'plantar' => ($request->plantar === '-' ? 'Plantar Tidak' : 'Plantar Ya'),
-            ],
-            'deformitas' => [
-                'kiri' => ($request->deformitasKiri === '+' ? 'Deformitas Kiri Ada' : 'Deformitas Kiri Tidak Ada'),
-                'kanan' => ($request->deformitasKanan === '+' ? 'Deformitas Kanan Ada' : 'Deformitas Kanan Tidak Ada'),
-            ],
+            ]),
+            'neuropati' => json_encode([
+                'dorsal' => ($request->dorsalPedis === '-' ? 'Tidak' : 'Ya'),
+                'plantar' => ($request->plantar === '-' ? 'Tidak' : 'Ya'),
+            ]),
+            'deformitas' => json_encode([
+                'kiri' => ($request->deformitasKiri === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
+                'kanan' => ($request->deformitasKanan === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
+            ]),
             'kategori_risiko' => $kategori,
             'hasil' => $hasil,
         ]);
-        
 
         \Log::info('Medical record created', ['record_id' => $medicalRecord->id]);
 
