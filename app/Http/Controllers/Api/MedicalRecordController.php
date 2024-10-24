@@ -95,19 +95,19 @@ class MedicalRecordController extends Controller
         // Simpan rekam medis
         $medicalRecord = MedicalRecord::create([
             'patient_id' => $patient->id,
-            'angiopati' => json_encode([
+            'angiopati' => [
                 'dorsal' => ($request->dorsalPedis === '-' ? 'Tidak' : 'Ya'),
                 'plantar' => ($request->plantar === '-' ? 'Tidak' : 'Ya'),
-            ]),
-            'neuropati' => json_encode([
+            ],
+            'neuropati' => [
                 'jariJari1' => ($request->jariJari1 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
                 'jariJari3' => ($request->jariJari3 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
                 'jariJari5' => ($request->jariJari5 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
-            ]),
-            'deformitas' => json_encode([
+            ],
+            'deformitas' => [
                 'kiri' => ($request->deformitasKiri === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
                 'kanan' => ($request->deformitasKanan === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
-            ]),
+            ],
             'kategori_risiko' => $kategori,
             'hasil' => $hasil,
         ]);

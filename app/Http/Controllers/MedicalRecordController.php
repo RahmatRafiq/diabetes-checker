@@ -12,20 +12,22 @@ class MedicalRecordController extends Controller
 {
     public function index()
     {
+        // Mengambil semua rekam medis dengan relasi ke pasien
         $medicalRecords = MedicalRecord::with('patient')->get();
         return view('app.medical-record.index', compact('medicalRecords'));
     }
+
     public function json(Request $request)
     {
         $search = $request->search['value'];
         $query = MedicalRecord::query()
-            ->join('patients', 'medical_records.patient_id', '=', 'patients.id') // Bergabung dengan tabel patients
-            ->join('users', 'patients.user_id', '=', 'users.id') // Bergabung dengan tabel users
-            ->select('medical_records.*', 'users.name as patient_name'); // Memilih kolom yang diperlukan
+            ->join('patients', 'medical_records.patient_id', '=', 'patients.id')
+            ->join('users', 'patients.user_id', '=', 'users.id')
+            ->select('medical_records.*', 'users.name as patient_name');
 
         // Mengatur pencarian
         if ($request->filled('search.value')) {
-            $query->where('users.name', 'like', "%{$search}%") // Pencarian berdasarkan nama pengguna
+            $query->where('users.name', 'like', "%{$search}%")
                 ->orWhere('angiopati', 'like', "%{$search}%")
                 ->orWhere('neuropati', 'like', "%{$search}%")
                 ->orWhere('deformitas', 'like', "%{$search}%")
@@ -33,10 +35,10 @@ class MedicalRecordController extends Controller
                 ->orWhere('hasil', 'like', "%{$search}%");
         }
 
-        // Kolom yang akan digunakan untuk pengurutan
+        // Kolom yang digunakan untuk pengurutan
         $columns = [
             'id',
-            'patient_name', // Menggunakan alias dari join
+            'patient_name',
             'angiopati',
             'neuropati',
             'deformitas',
@@ -57,17 +59,18 @@ class MedicalRecordController extends Controller
 
     public function show($id)
     {
+        // Menemukan rekam medis berdasarkan ID
         $record = MedicalRecord::with('patient')->findOrFail($id);
 
+        // Menghitung BMI jika tinggi dan berat badan tersedia
         $bmi = null;
-        $bmiCategory = 'Data tidak tersedia'; // Default untuk kategori BMI
+        $bmiCategory = 'Data tidak tersedia';
         if ($record->patient && $record->patient->height && $record->patient->weight) {
-            // Menghitung BMI
-            $heightInMeters = $record->patient->height / 100; // Konversi dari cm ke meter
-            $bmi = $record->patient->weight / ($heightInMeters * $heightInMeters); // Rumus BMI
-            $bmi = round($bmi, 2); // Membulatkan hasil BMI ke 2 desimal
+            $heightInMeters = $record->patient->height / 100;
+            $bmi = $record->patient->weight / ($heightInMeters * $heightInMeters);
+            $bmi = round($bmi, 2);
 
-            // Logika untuk menentukan kategori BMI
+            // Kategori BMI
             if ($bmi < 18.5) {
                 $bmiCategory = 'Underweight (Kurus)';
             } elseif ($bmi >= 18.5 && $bmi < 25) {
@@ -86,6 +89,7 @@ class MedicalRecordController extends Controller
 
     public function create()
     {
+        // Mendapatkan pasien berdasarkan pengguna saat ini
         $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
         return view('app.medical-record.create', compact('patient'));
     }
@@ -102,14 +106,11 @@ class MedicalRecordController extends Controller
             'deformitasKiri' => 'required',
             'punggung_kaki' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'telapak_kaki' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'punggung_kaki_kiri' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'telapak_kaki_kiri' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'punggung_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'telapak_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
 
+        // Skor angiopati, neuropati, dan deformitas
         $angiopatiScore = ($request->jariJari1 === '-' || $request->jariJari3 === '-' || $request->jariJari5 === '-') ? 1 : 0;
         $neuropatiScore = ($request->dorsalPedis === '-' || $request->plantar === '-') ? 1 : 0;
         $deformitasScore = ($request->deformitasKanan === '+' || $request->deformitasKiri === '+') ? 2 : 0;
@@ -132,21 +133,22 @@ class MedicalRecordController extends Controller
             $hasil = "Risiko Tinggi";
         }
 
+        // Laravel akan otomatis menghandle JSON
         $medicalRecord = MedicalRecord::create([
             'patient_id' => $patient->id,
-            'angiopati' => json_encode([
+            'angiopati' => [
                 'dorsal' => ($request->dorsalPedis === '-' ? 'Tidak' : 'Ya'),
                 'plantar' => ($request->plantar === '-' ? 'Tidak' : 'Ya'),
-            ]),
-            'neuropati' => json_encode([
+            ],
+            'neuropati' => [
                 'jariJari1' => ($request->jariJari1 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
                 'jariJari3' => ($request->jariJari3 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
                 'jariJari5' => ($request->jariJari5 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
-            ]),
-            'deformitas' => json_encode([
+            ],
+            'deformitas' => [
                 'kiri' => ($request->deformitasKiri === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
                 'kanan' => ($request->deformitasKanan === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
-            ]),
+            ],
             'kategori_risiko' => $kategori,
             'hasil' => $hasil,
         ]);
@@ -157,18 +159,6 @@ class MedicalRecordController extends Controller
         if ($request->hasFile('telapak_kaki')) {
             $this->storeFile($medicalRecord, $request->file('telapak_kaki'), 'telapak-kaki', 'telapak_kaki');
         }
-        // if ($request->hasFile('punggung_kaki_kiri')) {
-        //     $this->storeFile($medicalRecord, $request->file('punggung_kaki_kiri'), 'punggung-kaki-kiri', 'punggung_kaki_kiri');
-        // }
-        // if ($request->hasFile('telapak_kaki_kiri')) {
-        //     $this->storeFile($medicalRecord, $request->file('telapak_kaki_kiri'), 'telapak-kaki-kiri', 'telapak_kaki_kiri');
-        // }
-        // if ($request->hasFile('punggung_kaki_kanan')) {
-        //     $this->storeFile($medicalRecord, $request->file('punggung_kaki_kanan'), 'punggung-kaki-kanan', 'punggung_kaki_kanan');
-        // }
-        // if ($request->hasFile('telapak_kaki_kanan')) {
-        //     $this->storeFile($medicalRecord, $request->file('telapak_kaki_kanan'), 'telapak-kaki-kanan', 'telapak_kaki_kanan');
-        // }
 
         return back()->with([
             'nama_pasien' => $patient->name,
@@ -190,19 +180,17 @@ class MedicalRecordController extends Controller
         $record = MedicalRecord::with('patient')->findOrFail($id);
 
         // Mengambil tinggi dan berat badan
-        $height = $record->patient->height; // Tinggi dalam cm
-        $weight = $record->patient->weight; // Berat dalam kg
+        $height = $record->patient->height;
+        $weight = $record->patient->weight;
 
         // Menghitung BMI
         $bmi = null;
-        $bmiCategory = 'Data tidak tersedia'; // Default untuk kategori BMI
+        $bmiCategory = 'Data tidak tersedia';
         if ($height && $weight) {
-            // Menghitung BMI
-            $heightInMeters = $height / 100; // Konversi dari cm ke meter
-            $bmi = $weight / ($heightInMeters * $heightInMeters); // Rumus BMI
-            $bmi = round($bmi, 2); // Membulatkan hasil BMI ke 2 desimal
+            $heightInMeters = $height / 100;
+            $bmi = $weight / ($heightInMeters * $heightInMeters);
+            $bmi = round($bmi, 2);
 
-            // Logika untuk menentukan kategori BMI
             if ($bmi < 18.5) {
                 $bmiCategory = 'Underweight (Kurus)';
             } elseif ($bmi >= 18.5 && $bmi < 25) {
@@ -215,20 +203,8 @@ class MedicalRecordController extends Controller
         }
 
         // Menyimpan URL gambar media
-        $punggungKakiKiri = '';
-        $telapakKakiKiri = '';
-        $punggungKakiKanan = '';
-        $telapakKakiKanan = '';
-
-        if ($record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki')) {
-            $path = $record->getFirstMediaPath('punggung-kaki', 'punggung_kaki');
-            $punggungKaki = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
-        }
-
-        if ($record->getFirstMediaUrl('telapak-kaki', 'telapak_kaki')) {
-            $path = $record->getFirstMediaPath('telapak-kaki', 'telapak_kaki');
-            $telapakKaki = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
-        }
+        $punggungKaki = $record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki') ?: null;
+        $telapakKaki = $record->getFirstMediaUrl('telapak-kaki', 'telapak_kaki') ?: null;
 
         // Mengirim data ke view PDF
         $pdf = PDF::loadView('app.medical-record.export', compact('record', 'height', 'weight', 'bmi', 'bmiCategory', 'punggungKaki', 'telapakKaki'))
@@ -236,5 +212,4 @@ class MedicalRecordController extends Controller
 
         return $pdf->download('rekam_medis_pasien.pdf');
     }
-
 }
