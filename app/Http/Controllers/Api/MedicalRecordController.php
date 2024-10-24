@@ -87,13 +87,19 @@ class MedicalRecordController extends Controller
         // Simpan rekam medis dengan nilai deskriptif di database
         $medicalRecord = MedicalRecord::create([
             'patient_id' => $patient->id,
-            'angiopati' => ($request->jariJari1 === '-' ? 'Tidak Merasakan' : 'Merasakan') . ', ' .
-            ($request->jariJari3 === '-' ? 'Tidak Merasakan' : 'Merasakan') . ', ' .
-            ($request->jariJari5 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
-            'neuropati' => ($request->dorsalPedis === '-' ? 'Tidak' : 'Ya') . ', ' .
-            ($request->plantar === '-' ? 'Tidak' : 'Ya'),
-            'deformitas' => ($request->deformitasKanan === '+' ? 'Ada deformitas' : 'Tidak ada deformitas') . ', ' .
-            ($request->deformitasKiri === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
+            'angiopati' => [
+                'jariJari1' => ($request->jariJari1 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
+                'jariJari3' => ($request->jariJari3 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
+                'jariJari5' => ($request->jariJari5 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
+            ],
+            'neuropati' => [
+                'dorsal' => ($request->dorsalPedis === '-' ? 'Tidak' : 'Ya'),
+                'plantar' => ($request->plantar === '-' ? 'Tidak' : 'Ya'),
+            ],
+            'deformitas' => [
+                'deformitasKanan' => ($request->deformitasKanan === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
+                'deformitasKiri' => ($request->deformitasKiri === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
+            ],
             'kategori_risiko' => $kategori,
             'hasil' => $hasil,
         ]);
