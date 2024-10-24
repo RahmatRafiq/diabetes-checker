@@ -12,9 +12,6 @@
                     <tr>
                         <th>Id</th>
                         <th>Nama Pasien</th>
-                        <th>Angiopati</th>
-                        <th>Neuropati</th>
-                        <th>Deformitas</th>
                         <th>Kategori Risiko</th>
                         <th>Hasil</th>
                         <th>Aksi</th>
@@ -52,24 +49,6 @@
             columns: [
                 { data: 'id' },
                 { data: 'patient_name' },
-                { 
-                    data: 'angiopati',
-                    render: function(data) {
-                        return 'Dorsal: ' + data.dorsal + ', Plantar: ' + data.plantar;
-                    }
-                },
-                { 
-                    data: 'neuropati',
-                    render: function(data) {
-                        return 'JariJari1: ' + data.jariJari1 + ', JariJari3: ' + data.jariJari3 + ', JariJari5: ' + data.jariJari5;
-                    }
-                },
-                { 
-                    data: 'deformitas',
-                    render: function(data) {
-                        return 'Kiri: ' + data.kiri + ', Kanan: ' + data.kanan;
-                    }
-                },
                 { data: 'kategori_risiko' },
                 { data: 'hasil' },
                 { 

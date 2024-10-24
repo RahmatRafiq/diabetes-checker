@@ -21,37 +21,31 @@ class MedicalRecordController extends Controller
     {
         $search = $request->search['value'];
         $query = MedicalRecord::query()
-            ->join('patients', 'medical_records.patient_id', '=', 'patients.id')
-            ->join('users', 'patients.user_id', '=', 'users.id')
-            ->select('medical_records.*', 'users.name as patient_name');
+            ->join('patients', 'medical_records.patient_id', '=', 'patients.id') // Bergabung dengan tabel patients
+            ->join('users', 'patients.user_id', '=', 'users.id') // Bergabung dengan tabel users
+            ->select('medical_records.*', 'users.name as patient_name'); // Memilih kolom yang diperlukan
 
-        // Pencarian
+        // Mengatur pencarian
         if ($request->filled('search.value')) {
-            $query->where('users.name', 'like', "%{$search}%")
-                ->orWhere('medical_records.angiopati', 'like', "%{$search}%")
-                ->orWhere('medical_records.neuropati', 'like', "%{$search}%")
-                ->orWhere('medical_records.deformitas', 'like', "%{$search}%")
-                ->orWhere('medical_records.kategori_risiko', 'like', "%{$search}%")
-                ->orWhere('medical_records.hasil', 'like', "%{$search}%");
+            $query->where('users.name', 'like', "%{$search}%") // Pencarian berdasarkan nama pengguna
+                ->orWhere('kategori_risiko', 'like', "%{$search}%")
+                ->orWhere('hasil', 'like', "%{$search}%");
         }
 
-        // Kolom untuk pengurutan
+        // Kolom yang akan digunakan untuk pengurutan
         $columns = [
             'id',
-            'patient_name',
-            'angiopati',
-            'neuropati',
-            'deformitas',
+            'patient_name', // Menggunakan alias dari join
             'kategori_risiko',
             'hasil',
         ];
 
-        // Pengurutan
+        // Mengatur pengurutan
         if ($request->filled('order')) {
             $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
         }
 
-        // Ambil data dan langsung kembalikan dalam format aslinya (array)
+        // Mengambil data untuk DataTables
         $data = DataTable::paginate($query, $request);
 
         return response()->json($data);
