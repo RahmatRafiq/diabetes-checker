@@ -43,7 +43,7 @@
             processing: true,
             paging: true,
             ajax: {
-                url: '{{ route('medical-record.json') }}',
+                url: '{{ route('medical-records.json') }}',
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

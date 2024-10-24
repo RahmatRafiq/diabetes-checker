@@ -62,7 +62,6 @@
             max-width: 100%;
             height: auto;
             max-height: 150px;
-            /* Atur tinggi maksimal gambar */
         }
 
         .footer {
