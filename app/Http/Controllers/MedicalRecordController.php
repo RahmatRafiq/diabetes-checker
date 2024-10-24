@@ -208,10 +208,20 @@ class MedicalRecordController extends Controller
         $neuropati = 'JariJari1: ' . $record->neuropati['jariJari1'] . ', JariJari3: ' . $record->neuropati['jariJari3'] . ', JariJari5: ' . $record->neuropati['jariJari5'];
         $deformitas = 'Kiri: ' . $record->deformitas['kiri'] . ', Kanan: ' . $record->deformitas['kanan'];
 
-        // Menyimpan URL gambar media
-        $punggungKaki = $record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki') ?: null;
-        $telapakKaki = $record->getFirstMediaUrl('telapak-kaki', 'telapak_kaki') ?: null;
+        // $punggungKakiKiri = '';
+        // $telapakKakiKiri = '';
+        // $punggungKakiKanan = '';
+        // $telapakKakiKanan = '';
 
+        if ($record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki')) {
+            $path = $record->getFirstMediaPath('punggung-kaki', 'punggung_kaki');
+            $punggungKaki = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
+        }
+
+        if ($record->getFirstMediaUrl('telapak-kaki', 'telapak_kaki')) {
+            $path = $record->getFirstMediaPath('telapak-kaki', 'telapak_kaki');
+            $telapakKaki = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
+        }
         // Mengirim data ke view PDF, termasuk string hasil konversi
         $pdf = PDF::loadView('app.medical-record.export', compact('record', 'height', 'weight', 'bmi', 'bmiCategory', 'angiopati', 'neuropati', 'deformitas', 'punggungKaki', 'telapakKaki'))
             ->setPaper('a4', 'portrait');
