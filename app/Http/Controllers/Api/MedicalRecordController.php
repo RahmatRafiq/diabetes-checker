@@ -63,7 +63,7 @@ class MedicalRecordController extends Controller
         $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
         \Log::info('Patient found', ['patient_id' => $patient->id]);
 
-        // Perhitungan skor risiko tetap sama
+        // Perhitungan skor risiko
         $angiopatiScore = ($request->jariJari1 === '-' || $request->jariJari3 === '-' || $request->jariJari5 === '-') ? 1 : 0;
         $neuropatiScore = ($request->dorsalPedis === '-' || $request->plantar === '-') ? 1 : 0;
         $deformitasScore = ($request->deformitasKanan === '+' || $request->deformitasKiri === '+') ? 2 : 0;
@@ -84,22 +84,16 @@ class MedicalRecordController extends Controller
             $hasil = "Risiko Tinggi";
         }
 
-        // Simpan rekam medis dengan nilai deskriptif di database
+        // Simpan rekam medis dengan nilai deskriptif
         $medicalRecord = MedicalRecord::create([
             'patient_id' => $patient->id,
-            'angiopati' => [
-                'jariJari1' => ($request->jariJari1 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
-                'jariJari3' => ($request->jariJari3 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
-                'jariJari5' => ($request->jariJari5 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
-            ],
-            'neuropati' => [
-                'dorsal' => ($request->dorsalPedis === '-' ? 'Tidak' : 'Ya'),
-                'plantar' => ($request->plantar === '-' ? 'Tidak' : 'Ya'),
-            ],
-            'deformitas' => [
-                'deformitasKanan' => ($request->deformitasKanan === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
-                'deformitasKiri' => ($request->deformitasKiri === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
-            ],
+            'angiopati' => ($request->jariJari1 === '-' ? 'Tidak Merasakan' : 'Merasakan') . ', ' .
+            ($request->jariJari3 === '-' ? 'Tidak Merasakan' : 'Merasakan') . ', ' .
+            ($request->jariJari5 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
+            'neuropati' => ($request->dorsalPedis === '-' ? 'Tidak' : 'Ya') . ', ' .
+            ($request->plantar === '-' ? 'Tidak' : 'Ya'),
+            'deformitas' => ($request->deformitasKanan === '+' ? 'Ada deformitas' : 'Tidak ada deformitas') . ', ' .
+            ($request->deformitasKiri === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
             'kategori_risiko' => $kategori,
             'hasil' => $hasil,
         ]);
