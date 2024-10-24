@@ -63,19 +63,12 @@ class MedicalRecordController extends Controller
         $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
         \Log::info('Patient found', ['patient_id' => $patient->id]);
 
-        // Perhitungan skor risiko
+        // Perhitungan skor risiko tetap sama
         $angiopatiScore = ($request->jariJari1 === '-' || $request->jariJari3 === '-' || $request->jariJari5 === '-') ? 1 : 0;
         $neuropatiScore = ($request->dorsalPedis === '-' || $request->plantar === '-') ? 1 : 0;
         $deformitasScore = ($request->deformitasKanan === '+' || $request->deformitasKiri === '+') ? 2 : 0;
 
-        // Total skor
         $totalScore = $angiopatiScore + $neuropatiScore + $deformitasScore;
-        \Log::info('Risk score calculated', [
-            'angiopatiScore' => $angiopatiScore,
-            'neuropatiScore' => $neuropatiScore,
-            'deformitasScore' => $deformitasScore,
-            'totalScore' => $totalScore,
-        ]);
 
         // Tentukan kategori risiko
         $kategori = 0;
@@ -90,19 +83,24 @@ class MedicalRecordController extends Controller
             $kategori = 3;
             $hasil = "Risiko Tinggi";
         }
-        \Log::info('Risk category determined', ['kategori' => $kategori, 'hasil' => $hasil]);
 
-        // Simpan rekam medis
+        // Simpan rekam medis dengan nilai deskriptif di database
         $medicalRecord = MedicalRecord::create([
             'patient_id' => $patient->id,
-            'angiopati' => $request->jariJari1 . ', ' . $request->jariJari3 . ', ' . $request->jariJari5,
-            'neuropati' => $request->dorsalPedis . ', ' . $request->plantar,
-            'deformitas' => $request->deformitasKanan . ', ' . $request->deformitasKiri,
+            'angiopati' => ($request->jariJari1 === '-' ? 'Tidak Merasakan' : 'Merasakan') . ', ' .
+            ($request->jariJari3 === '-' ? 'Tidak Merasakan' : 'Merasakan') . ', ' .
+            ($request->jariJari5 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
+            'neuropati' => ($request->dorsalPedis === '-' ? 'Tidak' : 'Ya') . ', ' .
+            ($request->plantar === '-' ? 'Tidak' : 'Ya'),
+            'deformitas' => ($request->deformitasKanan === '+' ? 'Ada deformitas' : 'Tidak ada deformitas') . ', ' .
+            ($request->deformitasKiri === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
             'kategori_risiko' => $kategori,
             'hasil' => $hasil,
         ]);
+
         \Log::info('Medical record created', ['record_id' => $medicalRecord->id]);
 
+        // Simpan gambar jika ada
         if ($request->punggung_kaki) {
             $this->storeBase64File($medicalRecord, $request->punggung_kaki, 'punggung-kaki', 'punggung_kaki');
         }
