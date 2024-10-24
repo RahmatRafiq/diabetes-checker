@@ -111,8 +111,6 @@
                 <p><strong>Terapi DM:</strong> {{ $record->patient->dm_therapy ?? 'Data tidak tersedia' }}</p>
                 <p><strong>BMI :</strong> {{ $bmi ? $bmi . ' kg/m² (' . $bmiCategory . ')' : 'Data tidak tersedia' }}
                 </p>
-
-                <!-- Riwayat Luka -->
                 <p><strong>Riwayat Luka:</strong> {{ $record->patient->wound_history ?? 'Data tidak tersedia' }}</p>
                 @if($record->patient->wound_history === 'Ya')
                 <p><strong>Deskripsi Riwayat Luka:</strong> {{ $record->patient->wound_history_description ?? 'Data
@@ -127,7 +125,6 @@
                 <p><strong>Jenis Diet:</strong> {{ $record->patient->diet_type ?? 'Data tidak tersedia' }}</p>
             </div>
         </div>
-
 
         <hr>
 

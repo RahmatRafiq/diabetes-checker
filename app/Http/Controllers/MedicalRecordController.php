@@ -15,6 +15,7 @@ class MedicalRecordController extends Controller
         $medicalRecords = MedicalRecord::with('patient')->get();
         return view('app.medical-record.index', compact('medicalRecords'));
     }
+
     public function json(Request $request)
     {
         $search = $request->search['value'];
@@ -62,12 +63,10 @@ class MedicalRecordController extends Controller
         $bmi = null;
         $bmiCategory = 'Data tidak tersedia'; // Default untuk kategori BMI
         if ($record->patient && $record->patient->height && $record->patient->weight) {
-            // Menghitung BMI
             $heightInMeters = $record->patient->height / 100; // Konversi dari cm ke meter
             $bmi = $record->patient->weight / ($heightInMeters * $heightInMeters); // Rumus BMI
             $bmi = round($bmi, 2); // Membulatkan hasil BMI ke 2 desimal
 
-            // Logika untuk menentukan kategori BMI
             if ($bmi < 18.5) {
                 $bmiCategory = 'Underweight (Kurus)';
             } elseif ($bmi >= 18.5 && $bmi < 25) {
@@ -81,6 +80,7 @@ class MedicalRecordController extends Controller
 
         $punggungKaki = $record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki') ?: null;
         $telapakKaki = $record->getFirstMediaUrl('telapak-kaki', 'telapak_kaki') ?: null;
+
         return view('app.medical-record.show', compact('record', 'punggungKaki', 'telapakKaki', 'bmi', 'bmiCategory'));
     }
 
@@ -102,10 +102,6 @@ class MedicalRecordController extends Controller
             'deformitasKiri' => 'required',
             'punggung_kaki' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'telapak_kaki' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'punggung_kaki_kiri' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'telapak_kaki_kiri' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'punggung_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'telapak_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
@@ -152,18 +148,6 @@ class MedicalRecordController extends Controller
         if ($request->hasFile('telapak_kaki')) {
             $this->storeFile($medicalRecord, $request->file('telapak_kaki'), 'telapak-kaki', 'telapak_kaki');
         }
-        // if ($request->hasFile('punggung_kaki_kiri')) {
-        //     $this->storeFile($medicalRecord, $request->file('punggung_kaki_kiri'), 'punggung-kaki-kiri', 'punggung_kaki_kiri');
-        // }
-        // if ($request->hasFile('telapak_kaki_kiri')) {
-        //     $this->storeFile($medicalRecord, $request->file('telapak_kaki_kiri'), 'telapak-kaki-kiri', 'telapak_kaki_kiri');
-        // }
-        // if ($request->hasFile('punggung_kaki_kanan')) {
-        //     $this->storeFile($medicalRecord, $request->file('punggung_kaki_kanan'), 'punggung-kaki-kanan', 'punggung_kaki_kanan');
-        // }
-        // if ($request->hasFile('telapak_kaki_kanan')) {
-        //     $this->storeFile($medicalRecord, $request->file('telapak_kaki_kanan'), 'telapak-kaki-kanan', 'telapak_kaki_kanan');
-        // }
 
         return back()->with([
             'nama_pasien' => $patient->name,
@@ -202,10 +186,8 @@ class MedicalRecordController extends Controller
         }
 
         // Menyimpan URL gambar media
-        $punggungKakiKiri = '';
-        $telapakKakiKiri = '';
-        $punggungKakiKanan = '';
-        $telapakKakiKanan = '';
+        $punggungKaki = '';
+        $telapakKaki = '';
 
         if ($record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki')) {
             $path = $record->getFirstMediaPath('punggung-kaki', 'punggung_kaki');
@@ -223,5 +205,4 @@ class MedicalRecordController extends Controller
 
         return $pdf->download('rekam_medis_pasien.pdf');
     }
-
 }
