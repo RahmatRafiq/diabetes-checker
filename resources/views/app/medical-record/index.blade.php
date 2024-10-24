@@ -2,10 +2,8 @@
 
 @section('content')
 <div class="card mb-3">
+
     <div class="card-body">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="card-title">Data Rekam Medis Pasien</h5>
-        </div>
         <div class="table-responsive">
             <table class="table styled-table" id="medical-records">
                 <thead>
@@ -43,7 +41,7 @@
             processing: true,
             paging: true,
             ajax: {
-                url: '{{ route('medical-records.json') }}',
+                url: '{{ route('medical-record.json') }}',
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
