@@ -35,7 +35,7 @@ class MedicalRecordController extends Controller
                 ->orWhere('hasil', 'like', "%{$search}%");
         }
 
-        // Kolom yang digunakan untuk pengurutan
+        // Kolom yang akan digunakan untuk pengurutan
         $columns = [
             'id',
             'patient_name',
@@ -51,8 +51,17 @@ class MedicalRecordController extends Controller
             $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
         }
 
-        // Mengambil data untuk DataTables
-        $data = DataTable::paginate($query, $request);
+        // Memproses data sebelum dikirim ke DataTables
+        $data = $query->get()->map(function ($record) {
+            // Convert the array data into readable strings
+            $record->angiopati = 'Dorsal: ' . $record->angiopati['dorsal'] . ', Plantar: ' . $record->angiopati['plantar'];
+            $record->neuropati = 'JariJari1: ' . $record->neuropati['jariJari1'] . ', JariJari3: ' . $record->neuropati['jariJari3'] . ', JariJari5: ' . $record->neuropati['jariJari5'];
+            $record->deformitas = 'Kiri: ' . $record->deformitas['kiri'] . ', Kanan: ' . $record->deformitas['kanan'];
+            return $record;
+        });
+
+        // Mengambil data untuk DataTables dengan paginasi
+        $data = DataTable::paginate($data, $request);
 
         return response()->json($data);
     }
@@ -82,9 +91,16 @@ class MedicalRecordController extends Controller
             }
         }
 
+        // Mengonversi data array ke format string yang dapat dibaca
+        $angiopati = 'Dorsal: ' . $record->angiopati['dorsal'] . ', Plantar: ' . $record->angiopati['plantar'];
+        $neuropati = 'JariJari1: ' . $record->neuropati['jariJari1'] . ', JariJari3: ' . $record->neuropati['jariJari3'] . ', JariJari5: ' . $record->neuropati['jariJari5'];
+        $deformitas = 'Kiri: ' . $record->deformitas['kiri'] . ', Kanan: ' . $record->deformitas['kanan'];
+
         $punggungKaki = $record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki') ?: null;
         $telapakKaki = $record->getFirstMediaUrl('telapak-kaki', 'telapak_kaki') ?: null;
-        return view('app.medical-record.show', compact('record', 'punggungKaki', 'telapakKaki', 'bmi', 'bmiCategory'));
+
+        // Kirim data ke view
+        return view('app.medical-record.show', compact('record', 'punggungKaki', 'telapakKaki', 'bmi', 'bmiCategory', 'angiopati', 'neuropati', 'deformitas'));
     }
 
     public function create()
@@ -202,14 +218,20 @@ class MedicalRecordController extends Controller
             }
         }
 
+        // Mengonversi data array ke format string yang dapat dibaca
+        $angiopati = 'Dorsal: ' . $record->angiopati['dorsal'] . ', Plantar: ' . $record->angiopati['plantar'];
+        $neuropati = 'JariJari1: ' . $record->neuropati['jariJari1'] . ', JariJari3: ' . $record->neuropati['jariJari3'] . ', JariJari5: ' . $record->neuropati['jariJari5'];
+        $deformitas = 'Kiri: ' . $record->deformitas['kiri'] . ', Kanan: ' . $record->deformitas['kanan'];
+
         // Menyimpan URL gambar media
         $punggungKaki = $record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki') ?: null;
         $telapakKaki = $record->getFirstMediaUrl('telapak-kaki', 'telapak_kaki') ?: null;
 
-        // Mengirim data ke view PDF
-        $pdf = PDF::loadView('app.medical-record.export', compact('record', 'height', 'weight', 'bmi', 'bmiCategory', 'punggungKaki', 'telapakKaki'))
+        // Mengirim data ke view PDF, termasuk string hasil konversi
+        $pdf = PDF::loadView('app.medical-record.export', compact('record', 'height', 'weight', 'bmi', 'bmiCategory', 'angiopati', 'neuropati', 'deformitas', 'punggungKaki', 'telapakKaki'))
             ->setPaper('a4', 'portrait');
 
         return $pdf->download('rekam_medis_pasien.pdf');
     }
+
 }

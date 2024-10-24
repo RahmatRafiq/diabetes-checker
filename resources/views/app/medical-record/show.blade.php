@@ -63,9 +63,9 @@
                 </div>
                 <div class="col-md-6">
                     <p><strong>Hasil Diagnosa:</strong> {{ $record->hasil }}</p>
-                    <p><strong>Angiopati:</strong> {{ $record->angiopati }}</p>
-                    <p><strong>Neuropati:</strong> {{ $record->neuropati }}</p>
-                    <p><strong>Deformitas:</strong> {{ $record->deformitas }}</p>
+                    <p><strong>Angiopati:</strong> {{ $angiopati }}</p>
+                    <p><strong>Neuropati:</strong> {{ $neuropati }}</p>
+                    <p><strong>Deformitas:</strong> {{ $deformitas }}</p>
                 </div>
             </div>
 
@@ -98,7 +98,6 @@
 
         <div class="card-footer text-end">
             <a href="{{ route('medical-records.index') }}" class="btn btn-secondary">Kembali ke Rekam Medis</a>
-            <a href="{{ route('medical-records.exportPDF', $record->id) }}" class="btn btn-primary">Ekspor PDF</a>
         </div>
     </div>
 </div>

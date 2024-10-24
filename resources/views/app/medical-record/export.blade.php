@@ -62,7 +62,6 @@
             max-width: 100%;
             height: auto;
             max-height: 150px;
-            /* Atur tinggi maksimal gambar */
         }
 
         .footer {
@@ -93,10 +92,8 @@
                 <p><strong>Tingkat Pendidikan:</strong> {{ $record->patient->education_level ?? 'Data tidak tersedia' }}
                 </p>
                 <p><strong>Pekerjaan:</strong> {{ $record->patient->occupation ?? 'Data tidak tersedia' }}</p>
-                <p><strong>Berat Badan:</strong> {{ $record->patient->weight ? $record->patient->weight . ' kg' : 'Data
-                    tidak tersedia' }}</p>
-                <p><strong>Tinggi Badan:</strong> {{ $record->patient->height ? $record->patient->height . ' cm' : 'Data
-                    tidak tersedia' }}</p>
+                <p><strong>Berat Badan:</strong> {{ $weight ? $weight . ' kg' : 'Data tidak tersedia' }}</p>
+                <p><strong>Tinggi Badan:</strong> {{ $height ? $height . ' cm' : 'Data tidak tersedia' }}</p>
                 <p><strong>Lama Menderita Diabetes:</strong> {{ $record->patient->years_with_diabetes ?
                     $record->patient->years_with_diabetes . ' tahun' : 'Data tidak tersedia' }}</p>
             </div>
@@ -109,10 +106,7 @@
         <div class="row">
             <div class="column">
                 <p><strong>Terapi DM:</strong> {{ $record->patient->dm_therapy ?? 'Data tidak tersedia' }}</p>
-                <p><strong>BMI :</strong> {{ $bmi ? $bmi . ' kg/m² (' . $bmiCategory . ')' : 'Data tidak tersedia' }}
-                </p>
-
-                <!-- Riwayat Luka -->
+                <p><strong>BMI:</strong> {{ $bmi ? $bmi . ' kg/m² (' . $bmiCategory . ')' : 'Data tidak tersedia' }}</p>
                 <p><strong>Riwayat Luka:</strong> {{ $record->patient->wound_history ?? 'Data tidak tersedia' }}</p>
                 @if($record->patient->wound_history === 'Ya')
                 <p><strong>Deskripsi Riwayat Luka:</strong> {{ $record->patient->wound_history_description ?? 'Data
@@ -128,7 +122,6 @@
             </div>
         </div>
 
-
         <hr>
 
         <!-- Section: Hasil Diagnosa -->
@@ -140,9 +133,9 @@
             </div>
             <div class="column">
                 <p><strong>Hasil Diagnosa:</strong> {{ $record->hasil }}</p>
-                <p><strong>Angiopati:</strong> {{ $record->angiopati }}</p>
-                <p><strong>Neuropati:</strong> {{ $record->neuropati }}</p>
-                <p><strong>Deformitas:</strong> {{ $record->deformitas }}</p>
+                <p><strong>Angiopati:</strong> {{ $angiopati }}</p>
+                <p><strong>Neuropati:</strong> {{ $neuropati }}</p>
+                <p><strong>Deformitas:</strong> {{ $deformitas }}</p>
             </div>
         </div>
 
