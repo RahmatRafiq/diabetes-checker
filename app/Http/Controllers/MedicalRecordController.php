@@ -132,11 +132,16 @@ class MedicalRecordController extends Controller
             $hasil = "Risiko Tinggi";
         }
 
+        // Simpan rekam medis dengan nilai deskriptif
         $medicalRecord = MedicalRecord::create([
             'patient_id' => $patient->id,
-            'angiopati' => $request->jariJari1 . ', ' . $request->jariJari3 . ', ' . $request->jariJari5,
-            'neuropati' => $request->dorsalPedis . ', ' . $request->plantar,
-            'deformitas' => $request->deformitasKanan . ', ' . $request->deformitasKiri,
+            'angiopati' => ($request->jariJari1 === '-' ? 'Tidak Merasakan' : 'Merasakan') . ', ' .
+            ($request->jariJari3 === '-' ? 'Tidak Merasakan' : 'Merasakan') . ', ' .
+            ($request->jariJari5 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
+            'neuropati' => ($request->dorsalPedis === '-' ? 'Tidak' : 'Ya') . ', ' .
+            ($request->plantar === '-' ? 'Tidak' : 'Ya'),
+            'deformitas' => ($request->deformitasKanan === '+' ? 'Ada deformitas' : 'Tidak ada deformitas') . ', ' .
+            ($request->deformitasKiri === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
             'kategori_risiko' => $kategori,
             'hasil' => $hasil,
         ]);
@@ -165,14 +170,6 @@ class MedicalRecordController extends Controller
             'kategori' => $kategori,
             'hasil' => $hasil,
         ]);
-    }
-
-    private function storeFile($medical_record, $file, $folder, $fileName)
-    {
-        $medical_record->addMedia($file)
-            ->usingFileName($fileName . '_' . time() . '.' . $file->getClientOriginalExtension())
-            ->withCustomProperties(['patient_id' => $medical_record->id])
-            ->toMediaCollection($folder);
     }
 
     public function exportPDF($id)
