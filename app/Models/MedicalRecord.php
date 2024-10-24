@@ -12,13 +12,13 @@ class MedicalRecord extends Model implements HasMedia
     use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
-        'patient_id', 
-        'angiopati', 
-        'neuropati', 
-        'deformitas', 
-        'riwayat_luka', 
-        'diet', 
-        'kategori_risiko', 
+        'patient_id',
+        'angiopati',
+        'neuropati',
+        'deformitas',
+        'riwayat_luka',
+        'diet',
+        'kategori_risiko',
         'hasil',
     ];
 
@@ -26,4 +26,9 @@ class MedicalRecord extends Model implements HasMedia
     {
         return $this->belongsTo(Patient::class);
     }
+    protected $casts = [
+        'angiopati' => 'array',
+        'neuropati' => 'array',
+        'deformitas' => 'array',
+    ];
 }

@@ -12,24 +12,20 @@ class MedicalRecordController extends Controller
 {
     public function index()
     {
-        // Mengambil data rekam medis dengan relasi pasien
         $medicalRecords = MedicalRecord::with('patient')->get();
-
-        // Mengirim data rekam medis ke view index
         return view('app.medical-record.index', compact('medicalRecords'));
     }
-
     public function json(Request $request)
     {
         $search = $request->search['value'];
         $query = MedicalRecord::query()
-            ->join('patients', 'medical_records.patient_id', '=', 'patients.id')
-            ->join('users', 'patients.user_id', '=', 'users.id')
-            ->select('medical_records.*', 'users.name as patient_name');
+            ->join('patients', 'medical_records.patient_id', '=', 'patients.id') // Bergabung dengan tabel patients
+            ->join('users', 'patients.user_id', '=', 'users.id') // Bergabung dengan tabel users
+            ->select('medical_records.*', 'users.name as patient_name'); // Memilih kolom yang diperlukan
 
         // Mengatur pencarian
         if ($request->filled('search.value')) {
-            $query->where('users.name', 'like', "%{$search}%")
+            $query->where('users.name', 'like', "%{$search}%") // Pencarian berdasarkan nama pengguna
                 ->orWhere('angiopati', 'like', "%{$search}%")
                 ->orWhere('neuropati', 'like', "%{$search}%")
                 ->orWhere('deformitas', 'like', "%{$search}%")
@@ -40,7 +36,7 @@ class MedicalRecordController extends Controller
         // Kolom yang akan digunakan untuk pengurutan
         $columns = [
             'id',
-            'patient_name',
+            'patient_name', // Menggunakan alias dari join
             'angiopati',
             'neuropati',
             'deformitas',
@@ -53,16 +49,7 @@ class MedicalRecordController extends Controller
             $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
         }
 
-        // Mendapatkan data rekam medis dan mendecode JSON sebelum dikirim ke DataTables
-        $data = $query->get()->map(function ($record) {
-            // Decode JSON fields
-            $record->angiopati = json_decode($record->angiopati, true);
-            $record->neuropati = json_decode($record->neuropati, true);
-            $record->deformitas = json_decode($record->deformitas, true);
-            return $record;
-        });
-
-        // Mengambil data untuk DataTables dengan paginasi
+        // Mengambil data untuk DataTables
         $data = DataTable::paginate($query, $request);
 
         return response()->json($data);
@@ -70,23 +57,17 @@ class MedicalRecordController extends Controller
 
     public function show($id)
     {
-        // Menemukan rekam medis berdasarkan ID
         $record = MedicalRecord::with('patient')->findOrFail($id);
 
-        // Decode JSON fields sebelum mengirim ke view
-        $record->angiopati = json_decode($record->angiopati, true);
-        $record->neuropati = json_decode($record->neuropati, true);
-        $record->deformitas = json_decode($record->deformitas, true);
-
-        // Menghitung BMI jika tinggi dan berat badan tersedia
         $bmi = null;
-        $bmiCategory = 'Data tidak tersedia';
+        $bmiCategory = 'Data tidak tersedia'; // Default untuk kategori BMI
         if ($record->patient && $record->patient->height && $record->patient->weight) {
-            $heightInMeters = $record->patient->height / 100;
-            $bmi = $record->patient->weight / ($heightInMeters * $heightInMeters);
-            $bmi = round($bmi, 2);
+            // Menghitung BMI
+            $heightInMeters = $record->patient->height / 100; // Konversi dari cm ke meter
+            $bmi = $record->patient->weight / ($heightInMeters * $heightInMeters); // Rumus BMI
+            $bmi = round($bmi, 2); // Membulatkan hasil BMI ke 2 desimal
 
-            // Kategori BMI
+            // Logika untuk menentukan kategori BMI
             if ($bmi < 18.5) {
                 $bmiCategory = 'Underweight (Kurus)';
             } elseif ($bmi >= 18.5 && $bmi < 25) {
@@ -98,16 +79,13 @@ class MedicalRecordController extends Controller
             }
         }
 
-        // Menampilkan gambar yang terupload
         $punggungKaki = $record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki') ?: null;
         $telapakKaki = $record->getFirstMediaUrl('telapak-kaki', 'telapak_kaki') ?: null;
-
         return view('app.medical-record.show', compact('record', 'punggungKaki', 'telapakKaki', 'bmi', 'bmiCategory'));
     }
 
     public function create()
     {
-        // Mendapatkan pasien yang terkait dengan pengguna saat ini
         $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
         return view('app.medical-record.create', compact('patient'));
     }
@@ -124,18 +102,20 @@ class MedicalRecordController extends Controller
             'deformitasKiri' => 'required',
             'punggung_kaki' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'telapak_kaki' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'punggung_kaki_kiri' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'telapak_kaki_kiri' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'punggung_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'telapak_kaki_kanan' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $patient = Patient::where('user_id', auth()->user()->id)->firstOrFail();
 
-        // Skor angiopati, neuropati, dan deformitas
         $angiopatiScore = ($request->jariJari1 === '-' || $request->jariJari3 === '-' || $request->jariJari5 === '-') ? 1 : 0;
         $neuropatiScore = ($request->dorsalPedis === '-' || $request->plantar === '-') ? 1 : 0;
         $deformitasScore = ($request->deformitasKanan === '+' || $request->deformitasKiri === '+') ? 2 : 0;
 
         $totalScore = $angiopatiScore + $neuropatiScore + $deformitasScore;
 
-        // Menentukan kategori risiko dan hasil diagnosa
         $kategori = 0;
         $hasil = "Tidak Berisiko";
         if ($totalScore === 0) {
@@ -152,33 +132,43 @@ class MedicalRecordController extends Controller
             $hasil = "Risiko Tinggi";
         }
 
-        // Simpan rekam medis dengan nilai deskriptif
         $medicalRecord = MedicalRecord::create([
             'patient_id' => $patient->id,
             'angiopati' => json_encode([
-                'jariJari1' => $request->jariJari1,
-                'jariJari3' => $request->jariJari3,
-                'jariJari5' => $request->jariJari5,
+                'dorsal' => ($request->dorsalPedis === '-' ? 'Tidak' : 'Ya'),
+                'plantar' => ($request->plantar === '-' ? 'Tidak' : 'Ya'),
             ]),
             'neuropati' => json_encode([
-                'dorsalPedis' => $request->dorsalPedis,
-                'plantar' => $request->plantar,
+                'jariJari1' => ($request->jariJari1 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
+                'jariJari3' => ($request->jariJari3 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
+                'jariJari5' => ($request->jariJari5 === '-' ? 'Tidak Merasakan' : 'Merasakan'),
             ]),
             'deformitas' => json_encode([
-                'deformitasKanan' => $request->deformitasKanan,
-                'deformitasKiri' => $request->deformitasKiri,
+                'kiri' => ($request->deformitasKiri === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
+                'kanan' => ($request->deformitasKanan === '+' ? 'Ada deformitas' : 'Tidak ada deformitas'),
             ]),
             'kategori_risiko' => $kategori,
             'hasil' => $hasil,
         ]);
 
-        // Simpan gambar jika ada
         if ($request->hasFile('punggung_kaki')) {
             $this->storeFile($medicalRecord, $request->file('punggung_kaki'), 'punggung-kaki', 'punggung_kaki');
         }
         if ($request->hasFile('telapak_kaki')) {
             $this->storeFile($medicalRecord, $request->file('telapak_kaki'), 'telapak-kaki', 'telapak_kaki');
         }
+        // if ($request->hasFile('punggung_kaki_kiri')) {
+        //     $this->storeFile($medicalRecord, $request->file('punggung_kaki_kiri'), 'punggung-kaki-kiri', 'punggung_kaki_kiri');
+        // }
+        // if ($request->hasFile('telapak_kaki_kiri')) {
+        //     $this->storeFile($medicalRecord, $request->file('telapak_kaki_kiri'), 'telapak-kaki-kiri', 'telapak_kaki_kiri');
+        // }
+        // if ($request->hasFile('punggung_kaki_kanan')) {
+        //     $this->storeFile($medicalRecord, $request->file('punggung_kaki_kanan'), 'punggung-kaki-kanan', 'punggung_kaki_kanan');
+        // }
+        // if ($request->hasFile('telapak_kaki_kanan')) {
+        //     $this->storeFile($medicalRecord, $request->file('telapak_kaki_kanan'), 'telapak-kaki-kanan', 'telapak_kaki_kanan');
+        // }
 
         return back()->with([
             'nama_pasien' => $patient->name,
@@ -187,28 +177,32 @@ class MedicalRecordController extends Controller
         ]);
     }
 
+    private function storeFile($medical_record, $file, $folder, $fileName)
+    {
+        $medical_record->addMedia($file)
+            ->usingFileName($fileName . '_' . time() . '.' . $file->getClientOriginalExtension())
+            ->withCustomProperties(['patient_id' => $medical_record->id])
+            ->toMediaCollection($folder);
+    }
+
     public function exportPDF($id)
     {
         $record = MedicalRecord::with('patient')->findOrFail($id);
 
-        // Decode JSON fields sebelum membuat PDF
-        $record->angiopati = json_decode($record->angiopati, true);
-        $record->neuropati = json_decode($record->neuropati, true);
-        $record->deformitas = json_decode($record->deformitas, true);
-
         // Mengambil tinggi dan berat badan
-        $height = $record->patient->height;
-        $weight = $record->patient->weight;
+        $height = $record->patient->height; // Tinggi dalam cm
+        $weight = $record->patient->weight; // Berat dalam kg
 
         // Menghitung BMI
         $bmi = null;
-        $bmiCategory = 'Data tidak tersedia';
+        $bmiCategory = 'Data tidak tersedia'; // Default untuk kategori BMI
         if ($height && $weight) {
-            $heightInMeters = $height / 100;
-            $bmi = $weight / ($heightInMeters * $heightInMeters);
-            $bmi = round($bmi, 2);
+            // Menghitung BMI
+            $heightInMeters = $height / 100; // Konversi dari cm ke meter
+            $bmi = $weight / ($heightInMeters * $heightInMeters); // Rumus BMI
+            $bmi = round($bmi, 2); // Membulatkan hasil BMI ke 2 desimal
 
-            // Kategori BMI
+            // Logika untuk menentukan kategori BMI
             if ($bmi < 18.5) {
                 $bmiCategory = 'Underweight (Kurus)';
             } elseif ($bmi >= 18.5 && $bmi < 25) {
@@ -221,8 +215,20 @@ class MedicalRecordController extends Controller
         }
 
         // Menyimpan URL gambar media
-        $punggungKaki = $record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki') ?: null;
-        $telapakKaki = $record->getFirstMediaUrl('telapak-kaki', 'telapak_kaki') ?: null;
+        $punggungKakiKiri = '';
+        $telapakKakiKiri = '';
+        $punggungKakiKanan = '';
+        $telapakKakiKanan = '';
+
+        if ($record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki')) {
+            $path = $record->getFirstMediaPath('punggung-kaki', 'punggung_kaki');
+            $punggungKaki = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
+        }
+
+        if ($record->getFirstMediaUrl('telapak-kaki', 'telapak_kaki')) {
+            $path = $record->getFirstMediaPath('telapak-kaki', 'telapak_kaki');
+            $telapakKaki = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path));
+        }
 
         // Mengirim data ke view PDF
         $pdf = PDF::loadView('app.medical-record.export', compact('record', 'height', 'weight', 'bmi', 'bmiCategory', 'punggungKaki', 'telapakKaki'))
@@ -231,11 +237,4 @@ class MedicalRecordController extends Controller
         return $pdf->download('rekam_medis_pasien.pdf');
     }
 
-    private function storeFile($medicalRecord, $file, $collectionName, $fileName)
-    {
-        // Fungsi untuk menyimpan file (gambar)
-        $medicalRecord->addMedia($file)
-            ->usingFileName($fileName . '.' . $file->getClientOriginalExtension())
-            ->toMediaCollection($collectionName);
-    }
 }
