@@ -21,24 +21,24 @@ class MedicalRecordController extends Controller
     {
         $search = $request->search['value'];
         $query = MedicalRecord::query()
-            ->join('patients', 'medical_records.patient_id', '=', 'patients.id') // Bergabung dengan tabel patients
-            ->join('users', 'patients.user_id', '=', 'users.id') // Bergabung dengan tabel users
-            ->select('medical_records.*', 'users.name as patient_name'); // Memilih kolom yang diperlukan
+            ->join('patients', 'medical_records.patient_id', '=', 'patients.id')
+            ->join('users', 'patients.user_id', '=', 'users.id')
+            ->select('medical_records.*', 'users.name as patient_name');
 
-        // Mengatur pencarian
+        // Pencarian
         if ($request->filled('search.value')) {
             $query->where('users.name', 'like', "%{$search}%")
-                ->orWhere('angiopati', 'like', "%{$search}%")
-                ->orWhere('neuropati', 'like', "%{$search}%")
-                ->orWhere('deformitas', 'like', "%{$search}%")
-                ->orWhere('kategori_risiko', 'like', "%{$search}%")
-                ->orWhere('hasil', 'like', "%{$search}%");
+                ->orWhere('medical_records.angiopati', 'like', "%{$search}%")
+                ->orWhere('medical_records.neuropati', 'like', "%{$search}%")
+                ->orWhere('medical_records.deformitas', 'like', "%{$search}%")
+                ->orWhere('medical_records.kategori_risiko', 'like', "%{$search}%")
+                ->orWhere('medical_records.hasil', 'like', "%{$search}%");
         }
 
-        // Kolom yang akan digunakan untuk pengurutan
+        // Kolom untuk pengurutan
         $columns = [
             'id',
-            'patient_name', // Menggunakan alias dari join
+            'patient_name',
             'angiopati',
             'neuropati',
             'deformitas',
@@ -46,19 +46,14 @@ class MedicalRecordController extends Controller
             'hasil',
         ];
 
-        // Mengatur pengurutan
+        // Pengurutan
         if ($request->filled('order')) {
             $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
         }
 
-        // Mengambil data untuk DataTables
-        $data = $query->get()->map(function ($record) {
-            // Convert the array data into readable strings
-            $record->angiopati = 'Dorsal: ' . $record->angiopati['dorsal'] . ', Plantar: ' . $record->angiopati['plantar'];
-            $record->neuropati = 'JariJari1: ' . $record->neuropati['jariJari1'] . ', JariJari3: ' . $record->neuropati['jariJari3'] . ', JariJari5: ' . $record->neuropati['jariJari5'];
-            $record->deformitas = 'Kiri: ' . $record->deformitas['kiri'] . ', Kanan: ' . $record->deformitas['kanan'];
-            return $record;
-        });
+        // Ambil data dan langsung kembalikan dalam format aslinya (array)
+        $data = DataTable::paginate($query, $request);
+
         return response()->json($data);
     }
 
