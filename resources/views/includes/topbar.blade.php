@@ -14,10 +14,10 @@
     <!-- App brand starts -->
     <div class="app-brand py-2 ms-3">
         <a href="/" class="d-sm-block d-none">
-            <img src="{{ asset('assets/images/logo.svg') }}" class="logo" alt="Bootstrap Gallery" />
+            <img src="{{ asset('assets/images/applogo.jpeg') }}" class="logo" alt="Bootstrap Gallery" />
         </a>
         <a href="index.html" class="d-sm-none d-block">
-            <img src="{{ asset('assets/images/logo-sm.svg') }}" class="logo" alt="Bootstrap Gallery" />
+            <img src="{{ asset('assets/images/applogo.jpeg') }}" class="logo" alt="Bootstrap Gallery" />
         </a>
     </div>
     <!-- App brand ends -->
