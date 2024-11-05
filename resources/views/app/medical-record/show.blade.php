@@ -45,10 +45,10 @@
                     @endif
                 </div>
                 <div class="col-md-6">
-                    <p><strong>Nilai GDS:</strong> {{ $record->patient->gds ? $record->patient->gds . ' mg/dL' : 'Data
+                    {{-- <p><strong>Nilai GDS:</strong> {{ $record->patient->gds ? $record->patient->gds . ' mg/dL' : 'Data
                         tidak tersedia' }}</p>
                     <p><strong>Nilai HbA1c:</strong> {{ $record->patient->hba1c ? $record->patient->hba1c . ' %' : 'Data
-                        tidak tersedia' }}</p>
+                        tidak tersedia' }}</p> --}}
                     <p><strong>Jenis Diet:</strong> {{ $record->patient->diet_type ?? 'Data tidak tersedia' }}</p>
                 </div>
             </div>

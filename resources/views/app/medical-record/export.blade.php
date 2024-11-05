@@ -114,10 +114,11 @@
                 @endif
             </div>
             <div class="column">
-                <p><strong>Nilai GDS:</strong> {{ $record->patient->gds ? $record->patient->gds . ' mg/dL' : 'Data tidak
+                {{-- <p><strong>Nilai GDS:</strong> {{ $record->patient->gds ? $record->patient->gds . ' mg/dL' : 'Data
+                    tidak
                     tersedia' }}</p>
                 <p><strong>Nilai HbA1c:</strong> {{ $record->patient->hba1c ? $record->patient->hba1c . ' %' : 'Data
-                    tidak tersedia' }}</p>
+                    tidak tersedia' }}</p> --}}
                 <p><strong>Jenis Diet:</strong> {{ $record->patient->diet_type ?? 'Data tidak tersedia' }}</p>
             </div>
         </div>
@@ -145,21 +146,22 @@
         <h4 class="section-title">Foto Kaki Pasien</h4>
         <div class="row">
             <div class="column text-center">
-                @if($punggungKaki)
+                @if($punggungKaki !== 'Tidak Ada Foto')
                 <p><strong>Punggung Kaki:</strong></p>
                 <img src="{{ $punggungKaki }}" alt="Punggung Kaki" class="img-fluid">
                 @else
-                <p>Foto Punggung Kaki tidak tersedia.</p>
+                <p><strong>Punggung Kaki:</strong> Tidak Ada Foto</p>
                 @endif
             </div>
             <div class="column text-center">
-                @if($telapakKaki)
+                @if($telapakKaki !== 'Tidak Ada Foto')
                 <p><strong>Telapak Kaki:</strong></p>
                 <img src="{{ $telapakKaki }}" alt="Telapak Kaki" class="img-fluid">
                 @else
-                <p>Foto Telapak Kaki tidak tersedia.</p>
+                <p><strong>Telapak Kaki:</strong> Tidak Ada Foto</p>
                 @endif
             </div>
+
         </div>
     </div>
 </body>

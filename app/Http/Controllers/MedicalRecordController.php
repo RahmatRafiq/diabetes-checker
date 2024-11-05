@@ -211,10 +211,8 @@ class MedicalRecordController extends Controller
         $neuropati = 'JariJari1: ' . $record->neuropati['jariJari1'] . ', JariJari3: ' . $record->neuropati['jariJari3'] . ', JariJari5: ' . $record->neuropati['jariJari5'];
         $deformitas = 'Kiri: ' . $record->deformitas['kiri'] . ', Kanan: ' . $record->deformitas['kanan'];
 
-        // $punggungKakiKiri = '';
-        // $telapakKakiKiri = '';
-        // $punggungKakiKanan = '';
-        // $telapakKakiKanan = '';
+        $punggungKaki = 'Tidak Ada Foto';
+        $telapakKaki = 'Tidak Ada Foto';
 
         if ($record->getFirstMediaUrl('punggung-kaki', 'punggung_kaki')) {
             $path = $record->getFirstMediaPath('punggung-kaki', 'punggung_kaki');
